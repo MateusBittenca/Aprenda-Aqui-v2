@@ -1,0 +1,50 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+import { Bell, Flame, Zap } from "lucide-react";
+import { formatNumber } from "@/lib/utils";
+
+interface TopBarProps {
+  xpTotal?: number;
+  streak?: number;
+}
+
+export function TopBar({ xpTotal = 0, streak = 0 }: TopBarProps) {
+  const { data: session } = useSession();
+
+  return (
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between bg-surface px-6 lg:ml-64 border-b-4 border-surface-variant shadow-sm">
+      <div className="lg:hidden">
+        <span className="text-xl font-black text-primary font-display">Aprenda Aqui!</span>
+      </div>
+
+      <div className="hidden lg:block">
+        <p className="text-sm text-on-surface-variant font-medium">
+          Continue sua jornada de aprendizado
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-error-container text-error rounded-full font-bold text-sm">
+          <Flame className="h-4 w-4 fill-error" />
+          {streak}
+        </div>
+
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container/10 text-primary rounded-full font-bold text-sm">
+          <Zap className="h-4 w-4" />
+          {formatNumber(xpTotal)} XP
+        </div>
+
+        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+          <Bell className="h-5 w-5 text-outline" />
+        </button>
+
+        <div className="h-8 w-px bg-surface-variant mx-1" />
+
+        <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container text-sm">
+          {session?.user?.name?.charAt(0) ?? "A"}
+        </div>
+      </div>
+    </header>
+  );
+}

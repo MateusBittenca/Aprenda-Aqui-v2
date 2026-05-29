@@ -1,0 +1,19 @@
+{
+  "name": "aprenda-aqui",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter web --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "build": "pnpm --filter database generate && pnpm --filter web build && pnpm --filter api build",
+    "db:generate": "pnpm --filter database generate",
+    "db:migrate": "pnpm --filter database migrate",
+    "db:migrate:deploy": "pnpm --filter database migrate:deploy",
+    "db:ensure-colors": "pnpm --filter database ensure-track-colors",
+    "db:seed": "pnpm --filter database seed",
+    "db:studio": "pnpm --filter database studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

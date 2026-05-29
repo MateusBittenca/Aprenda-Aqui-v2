@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        .block-shadow-primary {
+            box-shadow: 0 4px 0 #1f5100;
+        }
+        .block-shadow-primary:active {
+            box-shadow: 0 0px 0 #1f5100;
+            transform: translateY(4px);
+        }
+        .block-shadow-secondary {
+            box-shadow: 0 4px 0 #141742;
+        }
+        .block-shadow-secondary:active {
+            box-shadow: 0 0px 0 #141742;
+            transform: translateY(4px);
+        }
+        .block-shadow-card {
+            box-shadow: 0 4px 0 #e3e2e1;
+        }
+        .progress-glow {
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+        }
+        .bouncy-transition {
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .code-input {
+            font-family: 'Courier New', Courier, monospace;
+            resize: none;
+            background: transparent;
+            color: #ffffff;
+            outline: none;
+            caret-color: #6be026;
+        }
+        .syntax-tag { color: #ffdf92; }
+        .syntax-attr { color: #c0c2f7; }
+        .syntax-string { color: #87fe45; }
+        .syntax-content { color: #ffffff; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#141742",
+                      "primary-container": "#58cc02",
+                      "on-primary-container": "#1e5000",
+                      "primary": "#2b6c00",
+                      "secondary": "#1C1F4A",
+                      "on-secondary": "#ffffff",
+                      "surface": "#faf9f8",
+                      "surface-container": "#eeeeec",
+                      "surface-container-highest": "#e3e2e1",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#6f7b64",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#3f4a36"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "base": "8px",
+                      "sm": "12px",
+                      "xs": "4px",
+                      "xl": "64px",
+                      "container-max": "1200px",
+                      "md": "24px",
+                      "lg": "40px"
+              },
+              "fontFamily": {
+                      "label-lg": ["Plus Jakarta Sans"],
+                      "headline-md": ["Nunito Sans"],
+                      "display-lg": ["Nunito Sans"],
+                      "headline-lg-mobile": ["Nunito Sans"],
+                      "headline-lg": ["Nunito Sans"],
+                      "display-md": ["Nunito Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "800"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "800"}],
+                      "display-md": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Lesson Header -->
+<header class="fixed top-0 left-0 w-full bg-surface z-50 h-xl px-gutter md:px-lg flex items-center justify-center">
+<div class="max-w-container-max w-full flex items-center gap-md">
+<button class="p-xs hover:bg-surface-variant rounded-lg bouncy-transition">
+<span class="material-symbols-outlined text-outline" style="font-size: 32px;">close</span>
+</button>
+<div class="flex-grow h-base bg-surface-container-highest rounded-full overflow-hidden relative">
+<div class="h-full w-[45%] bg-primary-container relative bouncy-transition" id="progressFill">
+<div class="absolute top-0 left-0 w-full h-1/2 progress-glow"></div>
+</div>
+</div>
+<div class="flex items-center gap-xs font-headline-md text-error px-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-black">5</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow pt-xl pb-xl flex flex-col items-center px-gutter">
+<div class="w-full max-w-6xl mt-lg flex flex-col md:flex-row gap-lg items-stretch">
+<!-- Left Side: Instructions & Mascot -->
+<div class="flex-1 flex flex-col gap-md">
+<div class="bg-surface-container-low p-md rounded-xl border-2 border-surface-container-highest">
+<h2 class="font-headline-lg text-on-secondary-fixed mb-sm">Desafio de Código</h2>
+<p class="text-body-lg text-on-surface-variant mb-md">
+                        Mude o texto do elemento <code class="bg-surface-container-highest px-xs rounded font-bold">h1</code> para <span class="text-primary font-bold">"Olá Mundo"</span>.
+                    </p>
+<div class="flex items-start gap-md bg-white p-sm rounded-lg border border-outline-variant shadow-sm">
+<img alt="Mascot Tip" class="w-20 h-20 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uh-nB98krcoffq1Cop2-qEIAGLUtJzicujCxSZYQnSzGF1ckMxE7jPqoAWuKTVHqEcjuRXqs3hEIr6EZWfSEJEHsXQQAabgrA4xu2ADENRFfm3WCs-NZuy00Ikq62mg4D-VZez7R4eDINuPGV92EoFxxbPeJ0FPZp-saea9rxssT8nrJ1k_G80cv344Nm2XjUT0B-O8FVTggrZ8yaz08ZO9p4C2myDIpzpDt4FFACSS5YeyIgSlwzrHBLk"/>
+<div class="flex-1">
+<span class="text-xs font-bold text-outline uppercase tracking-wider">Dica do Robô</span>
+<p class="text-sm text-on-surface-variant italic">"Lembre-se que o conteúdo da tag fica entre a abertura e o fechamento!"</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Editor Pane -->
+<div class="flex-[1.5] flex flex-col gap-md">
+<!-- Editor Container -->
+<div class="flex flex-col bg-secondary rounded-xl overflow-hidden block-shadow-secondary border-2 border-on-secondary-fixed h-[400px]">
+<!-- Editor Header -->
+<div class="flex items-center justify-between px-md py-sm bg-on-secondary-fixed border-b border-secondary/30">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary-fixed"></div>
+<div class="w-3 h-3 rounded-full bg-primary-container"></div>
+<span class="ml-sm text-xs font-bold text-on-secondary/50 font-mono tracking-widest">index.html</span>
+</div>
+<button class="flex items-center gap-xs px-sm py-1 bg-primary-container text-on-primary-container rounded-md font-bold text-sm block-shadow-primary active:translate-y-1 hover:brightness-110 bouncy-transition" onclick="runCode()">
+<span class="material-symbols-outlined" style="font-size: 18px; font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            RODAR CÓDIGO
+                        </button>
+</div>
+<!-- Code Editor Content -->
+<div class="relative flex-grow p-md overflow-hidden">
+<div class="absolute inset-0 p-md pointer-events-none whitespace-pre-wrap font-mono text-lg leading-relaxed" id="syntaxHighlighter">
+<span class="syntax-tag">&lt;h1&gt;</span><span class="syntax-content" id="displayContent">Título</span><span class="syntax-tag">&lt;/h1&gt;</span>
+</div>
+<textarea class="code-input absolute inset-0 w-full h-full p-md font-mono text-lg leading-relaxed bg-transparent border-none focus:ring-0 opacity-10" id="codeEditor" oninput="updateHighlighter(this.value)">Título</textarea>
+</div>
+<!-- Output Console -->
+<div class="h-24 bg-on-secondary-fixed/50 border-t border-white/10 p-sm">
+<div class="flex items-center gap-xs mb-xs text-[10px] font-bold text-on-secondary/30 uppercase tracking-widest">
+<span class="material-symbols-outlined" style="font-size: 14px;">terminal</span>
+                            Resultado do Preview
+                        </div>
+<div class="bg-white rounded-md p-xs h-10 flex items-center justify-center font-bold text-on-secondary-fixed" id="outputPreview">
+                            Título
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Bar -->
+<footer class="sticky bottom-0 w-full bg-surface-container-lowest border-t-2 border-surface-container-highest py-md md:py-lg px-gutter z-50">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-md">
+<div class="hidden md:flex flex-col opacity-0 transition-opacity duration-300" id="feedbackText">
+<span class="font-headline-md text-primary" id="feedbackTitle">Muito bem!</span>
+<span class="font-body-md text-on-surface-variant">Seu código HTML está correto e o título foi atualizado.</span>
+</div>
+<button class="w-full md:w-64 h-xl bg-surface-container-highest text-on-surface/30 font-headline-md rounded-lg block-shadow-card transition-all duration-200 cursor-not-allowed" disabled="" id="checkButton" onclick="checkAnswer()">
+                VERIFICAR
+            </button>
+</div>
+</footer>
+<script>
+        let hasRunCode = false;
+
+        function updateHighlighter(value) {
+            document.getElementById('displayContent').innerText = value;
+            document.getElementById('outputPreview').innerText = value;
+        }
+
+        function runCode() {
+            hasRunCode = true;
+            const btn = document.getElementById('checkButton');
+            btn.disabled = false;
+            btn.classList.remove('bg-surface-container-highest', 'text-on-surface/30', 'cursor-not-allowed');
+            btn.classList.add('bg-primary-container', 'text-on-primary-container', 'block-shadow-primary');
+            
+            // Visual tactile feedback on run
+            const preview = document.getElementById('outputPreview');
+            preview.classList.add('ring-2', 'ring-primary-container', 'scale-105');
+            setTimeout(() => {
+                preview.classList.remove('ring-2', 'ring-primary-container', 'scale-105');
+            }, 300);
+        }
+
+        function checkAnswer() {
+            const code = document.getElementById('codeEditor').value.trim();
+            const checkButton = document.getElementById('checkButton');
+            const footer = document.querySelector('footer');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            const isCorrect = (code === 'Olá Mundo' || code === 'olá mundo' || code === 'Olá mundo');
+            
+            if (isCorrect) {
+                // Correct State
+                footer.classList.replace('bg-surface-container-lowest', 'bg-primary-container/20');
+                checkButton.innerText = "CONTINUAR";
+                checkButton.classList.replace('bg-primary-container', 'bg-primary-container');
+                feedbackText.classList.remove('hidden');
+                setTimeout(() => feedbackText.classList.add('opacity-100'), 10);
+                
+                // Pulse progress
+                const progress = document.getElementById('progressFill');
+                progress.style.width = '75%';
+            } else {
+                // Incorrect State
+                footer.classList.replace('bg-surface-container-lowest', 'bg-error-container');
+                checkButton.innerText = "TENTAR DE NOVO";
+                checkButton.classList.remove('bg-primary-container', 'block-shadow-primary');
+                checkButton.classList.add('bg-error', 'text-on-error', 'shadow-[0_4px_0_#93000a]');
+                
+                document.getElementById('feedbackTitle').innerText = "Oops! Quase lá.";
+                document.getElementById('feedbackTitle').classList.replace('text-primary', 'text-error');
+                feedbackText.querySelector('.text-on-surface-variant').innerText = "O texto precisa ser exatamente 'Olá Mundo'.";
+                feedbackText.classList.remove('hidden');
+                setTimeout(() => feedbackText.classList.add('opacity-100'), 10);
+            }
+        }
+
+        // Initialize editor with correct alignment
+        updateHighlighter(document.getElementById('codeEditor').value);
+    </script>
+</body></html>

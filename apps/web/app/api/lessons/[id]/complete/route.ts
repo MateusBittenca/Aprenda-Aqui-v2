@@ -1,0 +1,135 @@
+import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "database";
+
+interface QuizContent {
+  questions?: Array<{ question: string; options: string[]; correctIndex: number }>;
+}
+interface CodeContent {
+  starterCode?: string;
+  instructions?: string;
+}
+interface SolutionShape {
+  contains?: string;
+  correctIndex?: number;
+}
+
+function validateQuizAnswer(
+  content: QuizContent,
+  solution: SolutionShape | null,
+  answer: unknown
+): boolean {
+  const questions = content.questions ?? [];
+  if (questions.length === 0) return false;
+  const selectedIndex = typeof answer === "number" ? answer : -1;
+  const expected = solution?.correctIndex ?? questions[0]?.correctIndex ?? -1;
+  return selectedIndex === expected;
+}
+
+function validateCodeAnswer(
+  _content: CodeContent,
+  solution: SolutionShape | null,
+  answer: unknown
+): boolean {
+  if (!solution?.contains) return typeof answer === "string" && answer.trim().length > 0;
+  const code = typeof answer === "string" ? answer.trim().toLowerCase() : "";
+  return code.includes(solution.contains.replace(/<[^>]+>/g, "").trim().toLowerCase());
+}
+
+function calcStreak(currentStreak: number, ultimaAtividade: Date | null): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (!ultimaAtividade) return 1;
+  const last = new Date(ultimaAtividade);
+  last.setHours(0, 0, 0, 0);
+  const diff = Math.round((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return currentStreak;
+  if (diff === 1) return currentStreak + 1;
+  return 1;
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+  }
+
+  const userId = session.user.id;
+  const lessonId = params.id;
+
+  let body: { answer?: unknown } = {};
+  try {
+    body = await request.json();
+  } catch {
+    // corpo vazio é permitido (lições sem validação de resposta)
+  }
+
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    include: { track: { select: { slug: true } } },
+  });
+
+  if (!lesson) {
+    return NextResponse.json({ error: "Lição não encontrada" }, { status: 404 });
+  }
+
+  const existing = await prisma.userProgress.findUnique({
+    where: { userId_lessonId: { userId, lessonId } },
+  });
+  if (existing?.completed) {
+    return NextResponse.json({ alreadyCompleted: true, xpEarned: 0 });
+  }
+
+  const content = lesson.content as QuizContent & CodeContent;
+  const solution = lesson.solution as SolutionShape | null;
+  const isCorrect =
+    lesson.type === "QUIZ"
+      ? validateQuizAnswer(content, solution, body.answer)
+      : validateCodeAnswer(content, solution, body.answer);
+
+  if (!isCorrect) {
+    return NextResponse.json({ correct: false }, { status: 422 });
+  }
+
+  // Buscar streak atual antes da transação
+  const currentUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { streakAtual: true, ultimaAtividade: true },
+  });
+
+  const newStreak = calcStreak(
+    currentUser?.streakAtual ?? 0,
+    currentUser?.ultimaAtividade ?? null
+  );
+
+  await prisma.$transaction([
+    prisma.userProgress.create({
+      data: { userId, lessonId, xpEarned: lesson.xpReward, completed: true },
+    }),
+    prisma.user.update({
+      where: { id: userId },
+      data: {
+        xpTotal: { increment: lesson.xpReward },
+        streakAtual: newStreak,
+        ultimaAtividade: new Date(),
+      },
+    }),
+  ]);
+
+  revalidatePath("/dashboard", "layout");
+  revalidatePath("/trilhas");
+  revalidatePath(`/trilhas/${lesson.track.slug}`);
+  revalidatePath("/perfil");
+  revalidatePath("/ranking");
+
+  return NextResponse.json({
+    correct: true,
+    xpEarned: lesson.xpReward,
+    trackSlug: lesson.track.slug,
+  });
+}
