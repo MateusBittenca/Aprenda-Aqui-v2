@@ -11,6 +11,7 @@ import {
   Settings,
   Trophy,
   User,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/trilhas", label: "Trilhas", icon: Map },
   { href: "/ranking", label: "Ranking", icon: Trophy },
+  { href: "/comunidade", label: "Comunidade", icon: Users },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 

@@ -1,15 +1,21 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Bell, Flame, Zap } from "lucide-react";
+import { Flame, Zap } from "lucide-react";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { formatNumber } from "@/lib/utils";
 
 interface TopBarProps {
   xpTotal?: number;
   streak?: number;
+  unreadNotifications?: number;
 }
 
-export function TopBar({ xpTotal = 0, streak = 0 }: TopBarProps) {
+export function TopBar({
+  xpTotal = 0,
+  streak = 0,
+  unreadNotifications = 0,
+}: TopBarProps) {
   const { data: session } = useSession();
 
   return (
@@ -35,9 +41,7 @@ export function TopBar({ xpTotal = 0, streak = 0 }: TopBarProps) {
           {formatNumber(xpTotal)} XP
         </div>
 
-        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
-          <Bell className="h-5 w-5 text-outline" />
-        </button>
+        <NotificationBell initialUnreadCount={unreadNotifications} />
 
         <div className="h-8 w-px bg-surface-variant mx-1" />
 

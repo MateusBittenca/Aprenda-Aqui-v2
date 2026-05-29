@@ -3,6 +3,8 @@ import Link from "next/link";
 import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leaderboard";
 import { formatNumber, cn } from "@/lib/utils";
 import { MASCOT } from "@/lib/mascot";
+import { FriendActionButtonProfile } from "@/components/community/friend-action-button";
+import type { FriendshipView } from "@/lib/community";
 import type { PublicUserProfile } from "@/lib/public-profile";
 import {
   ArrowLeft,
@@ -20,12 +22,16 @@ interface UserProfileViewProps {
   profile: PublicUserProfile;
   isOwnProfile: boolean;
   email?: string;
+  friendshipStatus?: FriendshipView;
+  friendshipId?: string | null;
 }
 
 export function UserProfileView({
   profile,
   isOwnProfile,
   email,
+  friendshipStatus = "none",
+  friendshipId = null,
 }: UserProfileViewProps) {
   const xpProgress = Math.min(((1000 - profile.xpToNextLevel) / 1000) * 100, 100);
   const leagueLabel = LEAGUE_LABELS[profile.league];
@@ -39,13 +45,21 @@ export function UserProfileView({
   return (
     <div className="max-w-[800px] mx-auto">
       {!isOwnProfile && (
-        <Link
-          href="/ranking"
-          className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar ao ranking
-        </Link>
+        <div className="flex flex-wrap gap-4 mb-6">
+          <Link
+            href="/comunidade"
+            className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar à comunidade
+          </Link>
+          <Link
+            href="/ranking"
+            className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors"
+          >
+            Ver ranking
+          </Link>
+        </div>
       )}
 
       <div className="card-elevation rounded-4xl p-8 border-2 border-surface-container-highest mb-6 flex flex-col sm:flex-row items-center gap-6">
@@ -191,11 +205,19 @@ export function UserProfileView({
           </Link>
         </div>
       ) : (
-        <div className="mb-6 p-5 rounded-3xl border-2 border-surface-container-highest bg-surface-container-low text-center">
-          <p className="text-sm text-on-surface-variant">
-            Este é o perfil público de <strong className="text-on-background">{profile.name}</strong>.
-            Complete lições e dispute o ranking semanal para aparecer entre os melhores!
-          </p>
+        <div className="mb-6 space-y-4">
+          <FriendActionButtonProfile
+            targetUserId={profile.id}
+            friendshipStatus={friendshipStatus}
+            friendshipId={friendshipId}
+          />
+          <div className="p-5 rounded-3xl border-2 border-surface-container-highest bg-surface-container-low text-center">
+            <p className="text-sm text-on-surface-variant">
+              Este é o perfil público de{" "}
+              <strong className="text-on-background">{profile.name}</strong>. Adicione como amigo
+              para ver as atividades no feed da comunidade!
+            </p>
+          </div>
         </div>
       )}
 

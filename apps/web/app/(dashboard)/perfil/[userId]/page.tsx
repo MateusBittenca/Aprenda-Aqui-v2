@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import { getFriendshipBetween } from "@/lib/community";
 import { getPublicUserProfile } from "@/lib/public-profile";
 import { UserProfileView } from "@/components/profile/user-profile-view";
 
@@ -20,8 +21,18 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     redirect("/perfil");
   }
 
-  const profile = await getPublicUserProfile(userId);
+  const [profile, friendship] = await Promise.all([
+    getPublicUserProfile(userId),
+    getFriendshipBetween(session.user.id, userId),
+  ]);
   if (!profile) notFound();
 
-  return <UserProfileView profile={profile} isOwnProfile={false} />;
+  return (
+    <UserProfileView
+      profile={profile}
+      isOwnProfile={false}
+      friendshipStatus={friendship.status}
+      friendshipId={friendship.friendshipId}
+    />
+  );
 }

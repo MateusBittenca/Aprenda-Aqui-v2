@@ -2,7 +2,8 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "database";
+import { notifyFriendsOfLessonActivity } from "@/lib/notifications";
+import { prisma, ActivityType } from "database";
 
 interface QuizContent {
   questions?: Array<{ question: string; options: string[]; correctIndex: number }>;
@@ -71,7 +72,7 @@ export async function POST(
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
-    include: { track: { select: { slug: true } } },
+    include: { track: { select: { slug: true, title: true } } },
   });
 
   if (!lesson) {
@@ -119,13 +120,35 @@ export async function POST(
         ultimaAtividade: new Date(),
       },
     }),
+    prisma.activityEvent.create({
+      data: {
+        userId,
+        type: ActivityType.LESSON_COMPLETED,
+        metadata: {
+          lessonId: lesson.id,
+          lessonTitle: lesson.title,
+          trackTitle: lesson.track.title,
+          xpEarned: lesson.xpReward,
+        },
+      },
+    }),
   ]);
+
+  await notifyFriendsOfLessonActivity({
+    userId,
+    actorName: session.user.name ?? "Um amigo",
+    lessonId: lesson.id,
+    lessonTitle: lesson.title,
+    trackTitle: lesson.track.title,
+  });
 
   revalidatePath("/dashboard", "layout");
   revalidatePath("/trilhas");
   revalidatePath(`/trilhas/${lesson.track.slug}`);
   revalidatePath("/perfil");
   revalidatePath("/ranking");
+  revalidatePath("/comunidade");
+  revalidatePath("/", "layout");
 
   return NextResponse.json({
     correct: true,

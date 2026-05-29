@@ -5,6 +5,7 @@ export const config = {
     "/dashboard/:path*",
     "/trilhas/:path*",
     "/ranking/:path*",
+    "/comunidade",
     "/licoes/:path*",
     "/perfil/:path*",
     "/configuracoes",

@@ -5,7 +5,7 @@ import { Rocket } from "lucide-react";
 const navLinks = [
   { href: "/trilhas", label: "Trilhas" },
   { href: "/ranking", label: "Ranking" },
-  { href: "#comunidade", label: "Comunidade" },
+  { href: "/comunidade", label: "Comunidade" },
 ];
 
 export function LandingHeader() {

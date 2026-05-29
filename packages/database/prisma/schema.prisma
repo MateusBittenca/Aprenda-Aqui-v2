@@ -20,6 +20,22 @@ enum LeagueTier {
   DIAMOND
 }
 
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum ActivityType {
+  LESSON_COMPLETED
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  FRIEND_ACCEPTED
+  FRIEND_ACTIVITY
+}
+
 model User {
   id              String    @id @default(cuid())
   name            String
@@ -33,10 +49,15 @@ model User {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
-  accounts    Account[]
-  sessions    Session[]
-  progress    UserProgress[]
-  leaderboard LeaderboardEntry[]
+  accounts            Account[]
+  sessions            Session[]
+  progress            UserProgress[]
+  leaderboard         LeaderboardEntry[]
+  friendshipsSent     Friendship[]     @relation("FriendshipRequester")
+  friendshipsReceived Friendship[]     @relation("FriendshipAddressee")
+  activities          ActivityEvent[]
+  notifications       Notification[] @relation("NotificationRecipient")
+  notificationsSent   Notification[] @relation("NotificationActor")
 
   @@map("users")
 }
@@ -164,4 +185,49 @@ model LeaderboardEntry {
   @@unique([userId, weekStart])
   @@index([weekStart, xpWeekly(sort: Desc)])
   @@map("leaderboard")
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String           @map("requester_id")
+  addresseeId String           @map("addressee_id")
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@map("friendships")
+}
+
+model ActivityEvent {
+  id        String       @id @default(cuid())
+  userId    String       @map("user_id")
+  type      ActivityType
+  metadata  Json
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("activity_events")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  actorId   String?          @map("actor_id")
+  type      NotificationType
+  read      Boolean          @default(false)
+  metadata  Json
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user  User  @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor User? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read, createdAt(sort: Desc)])
+  @@map("notifications")
 }
