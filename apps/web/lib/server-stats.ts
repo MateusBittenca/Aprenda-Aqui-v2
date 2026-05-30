@@ -75,6 +75,7 @@ export interface UserProfile {
   email: string;
   image: string | null;
   xpTotal: number;
+  gems: number;
   streakAtual: number;
   ultimaAtividade: Date | null;
   level: number;
@@ -114,6 +115,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
       email: true,
       image: true,
       xpTotal: true,
+      gems: true,
       streakAtual: true,
       ultimaAtividade: true,
     },

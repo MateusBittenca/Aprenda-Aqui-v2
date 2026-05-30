@@ -15,6 +15,7 @@ import {
   Settings,
   Shield,
   Trophy,
+  Gem,
   Zap,
 } from "lucide-react";
 
@@ -129,8 +130,14 @@ export function UserProfileView({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {[
+          {
+            icon: Gem,
+            label: "Gemas",
+            value: formatNumber(profile.gems),
+            color: "text-secondary",
+          },
           {
             icon: Zap,
             label: "XP Total",

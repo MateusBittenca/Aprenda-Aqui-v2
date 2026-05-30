@@ -27,6 +27,7 @@ export default async function DashboardLayout({
       <Sidebar />
       <TopBar
         xpTotal={profile?.xpTotal ?? 0}
+        gems={profile?.gems ?? 0}
         streak={profile?.streakAtual ?? 0}
         unreadNotifications={unreadNotifications}
       />

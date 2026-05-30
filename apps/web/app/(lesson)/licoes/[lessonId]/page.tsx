@@ -52,6 +52,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         questions={content.questions ?? []}
         hint="Leia a pergunta com atenção antes de escolher!"
         xpReward={lesson.xpReward}
+        gemsReward={lesson.gemsReward}
         trackSlug={lesson.track.slug}
       />
     );
@@ -69,6 +70,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       starterCode={content.starterCode ?? ""}
       hint="Escreva o código, clique em RODAR e depois em VERIFICAR!"
       xpReward={lesson.xpReward}
+      gemsReward={lesson.gemsReward}
       trackSlug={lesson.track.slug}
       mode={mode}
     />

@@ -23,6 +23,7 @@ interface QuizLessonProps {
   questions: QuizQuestion[];
   hint?: string;
   xpReward: number;
+  gemsReward: number;
   trackSlug: string;
 }
 
@@ -35,6 +36,7 @@ export function QuizLesson({
   questions,
   hint,
   xpReward,
+  gemsReward,
   trackSlug,
 }: QuizLessonProps) {
   const router = useRouter();
@@ -72,7 +74,8 @@ export function QuizLesson({
       }
 
       const xp = result.xpEarned ?? xpReward;
-      navigateAfterLessonComplete(router, trackSlug, lessonId, xp);
+      const gems = result.gemsEarned ?? gemsReward;
+      navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems });
     } catch (err) {
       console.error("[quiz] erro de rede", err);
       setCompleteError(true);

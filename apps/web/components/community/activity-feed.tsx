@@ -23,8 +23,15 @@ function ActivityMessage({ item }: { item: ActivityFeedItem }) {
             em <span className="text-primary font-bold">{track}</span>
           </>
         ) : null}
-        {item.metadata.xpEarned ? (
-          <span className="text-on-surface-variant"> (+{item.metadata.xpEarned} XP)</span>
+        {item.metadata.xpEarned || item.metadata.gemsEarned ? (
+          <span className="text-on-surface-variant">
+            {" "}
+            (
+            {item.metadata.xpEarned ? `+${item.metadata.xpEarned} XP` : null}
+            {item.metadata.xpEarned && item.metadata.gemsEarned ? ", " : null}
+            {item.metadata.gemsEarned ? `+${item.metadata.gemsEarned} gemas` : null}
+            )
+          </span>
         ) : null}
       </>
     );

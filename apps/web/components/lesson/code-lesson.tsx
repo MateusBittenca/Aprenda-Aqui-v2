@@ -21,6 +21,7 @@ interface CodeLessonProps {
   starterCode: string;
   hint?: string;
   xpReward: number;
+  gemsReward: number;
   trackSlug: string;
   mode?: LessonMode;
 }
@@ -55,6 +56,7 @@ export function CodeLesson({
   starterCode,
   hint,
   xpReward,
+  gemsReward,
   trackSlug,
   mode = "HTML",
 }: CodeLessonProps) {
@@ -90,7 +92,8 @@ export function CodeLesson({
       }
 
       const xp = result.xpEarned ?? xpReward;
-      navigateAfterLessonComplete(router, trackSlug, lessonId, xp);
+      const gems = result.gemsEarned ?? gemsReward;
+      navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems });
     } catch (err) {
       console.error("[code] erro de rede", err);
       setCompleteError(true);

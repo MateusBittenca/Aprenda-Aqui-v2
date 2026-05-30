@@ -15,7 +15,7 @@ import { getTrackTheme } from "@/lib/track-theme";
 
 interface TrackPageProps {
   params: { slug: string };
-  searchParams: { completed?: string; xp?: string };
+  searchParams: { completed?: string; xp?: string; gems?: string };
 }
 
 export const dynamic = "force-dynamic";
@@ -63,6 +63,7 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
 
   const justCompleted = searchParams.completed;
   const xpEarned = searchParams.xp ? Number(searchParams.xp) : 0;
+  const gemsEarned = searchParams.gems ? Number(searchParams.gems) : 0;
 
   const pathNodes = buildLessonPath(track.units, completedIds, justCompleted);
 
@@ -87,10 +88,16 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
           <Trophy className="track-text h-8 w-8 shrink-0" />
           <div>
             <p className="font-extrabold text-on-background">Lição concluída!</p>
-            {xpEarned > 0 && (
+            {(xpEarned > 0 || gemsEarned > 0) && (
               <p className="text-sm text-on-surface-variant">
                 Você ganhou{" "}
-                <span className="track-banner-text font-bold">+{xpEarned} XP</span>
+                {xpEarned > 0 && (
+                  <span className="track-banner-text font-bold">+{xpEarned} XP</span>
+                )}
+                {xpEarned > 0 && gemsEarned > 0 && " e "}
+                {gemsEarned > 0 && (
+                  <span className="text-secondary font-bold">+{gemsEarned} gemas</span>
+                )}
               </p>
             )}
           </div>

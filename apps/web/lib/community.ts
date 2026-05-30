@@ -39,6 +39,7 @@ export interface ActivityFeedItem {
     lessonTitle?: string;
     trackTitle?: string;
     xpEarned?: number;
+    gemsEarned?: number;
   };
   createdAt: Date;
 }

@@ -12,6 +12,7 @@ export interface PublicUserProfile {
   name: string;
   image: string | null;
   xpTotal: number;
+  gems: number;
   streakAtual: number;
   createdAt: Date;
   level: number;
@@ -36,6 +37,7 @@ export async function getPublicUserProfile(
           name: true,
           image: true,
           xpTotal: true,
+          gems: true,
           streakAtual: true,
           createdAt: true,
         },
@@ -59,6 +61,7 @@ export async function getPublicUserProfile(
     name: user.name,
     image: user.image,
     xpTotal: user.xpTotal,
+    gems: user.gems,
     streakAtual: user.streakAtual,
     createdAt: user.createdAt,
     level: calculateLevel(user.xpTotal),

@@ -1,18 +1,20 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Flame, Zap } from "lucide-react";
+import { Flame, Gem, Zap } from "lucide-react";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { formatNumber } from "@/lib/utils";
 
 interface TopBarProps {
   xpTotal?: number;
+  gems?: number;
   streak?: number;
   unreadNotifications?: number;
 }
 
 export function TopBar({
   xpTotal = 0,
+  gems = 0,
   streak = 0,
   unreadNotifications = 0,
 }: TopBarProps) {
@@ -34,6 +36,11 @@ export function TopBar({
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-error-container text-error rounded-full font-bold text-sm">
           <Flame className="h-4 w-4 fill-error" />
           {streak}
+        </div>
+
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary-container/30 text-secondary rounded-full font-bold text-sm">
+          <Gem className="h-4 w-4 fill-secondary" />
+          {formatNumber(gems)}
         </div>
 
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container/10 text-primary rounded-full font-bold text-sm">

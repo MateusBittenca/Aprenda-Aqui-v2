@@ -49,7 +49,7 @@ router.post("/:id/complete", async (req: AuthRequest, res) => {
     });
 
     if (existing?.completed) {
-      return res.json({ alreadyCompleted: true, xpEarned: 0 });
+      return res.json({ alreadyCompleted: true, xpEarned: 0, gemsEarned: 0 });
     }
 
     await prisma.$transaction([
@@ -58,13 +58,16 @@ router.post("/:id/complete", async (req: AuthRequest, res) => {
       }),
       prisma.user.update({
         where: { id: userId },
-        data: { xpTotal: { increment: lesson.xpReward } },
+        data: {
+          xpTotal: { increment: lesson.xpReward },
+          gems: { increment: lesson.gemsReward },
+        },
       }),
     ]);
 
     await updateStreak(userId);
 
-    res.json({ xpEarned: lesson.xpReward, success: true });
+    res.json({ xpEarned: lesson.xpReward, gemsEarned: lesson.gemsReward, success: true });
   } catch {
     res.status(500).json({ error: "Erro ao concluir lição" });
   }

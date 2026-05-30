@@ -1,5 +1,6 @@
 import { PrismaClient, LessonType, ActivityType, NotificationType } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { gemsForXp } from "../src/gems";
 
 const prisma = new PrismaClient();
 
@@ -631,7 +632,7 @@ async function main() {
     },
   ];
 
-  const allLessons: { id: string; xpReward: number }[] = [];
+  const allLessons: { id: string; xpReward: number; gemsReward: number }[] = [];
 
   for (const trackData of tracksData) {
     const { units, ...trackFields } = trackData;
@@ -644,14 +645,21 @@ async function main() {
       });
 
       for (const lessonData of lessons) {
+        const { xpReward, ...rest } = lessonData;
         const lesson = await prisma.lesson.create({
           data: {
-            ...lessonData,
+            ...rest,
+            xpReward,
+            gemsReward: gemsForXp(xpReward),
             trackId: track.id,
             unitId: unit.id,
           },
         });
-        allLessons.push({ id: lesson.id, xpReward: lesson.xpReward });
+        allLessons.push({
+          id: lesson.id,
+          xpReward: lesson.xpReward,
+          gemsReward: lesson.gemsReward,
+        });
       }
     }
   }
@@ -659,10 +667,12 @@ async function main() {
   const weekStart = getWeekStart();
   const completedLessons = allLessons.slice(0, 8);
   let demoXpTotal = 0;
+  let demoGemsTotal = 0;
 
   for (let i = 0; i < completedLessons.length; i++) {
     const lesson = completedLessons[i];
     demoXpTotal += lesson.xpReward;
+    demoGemsTotal += lesson.gemsReward;
 
     const completedAt = new Date(weekStart);
     completedAt.setDate(completedAt.getDate() + (i % 7));
@@ -680,7 +690,7 @@ async function main() {
 
   await prisma.user.update({
     where: { id: demoUser.id },
-    data: { xpTotal: demoXpTotal },
+    data: { xpTotal: demoXpTotal, gems: demoGemsTotal },
   });
 
   const now = new Date();

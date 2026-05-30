@@ -83,7 +83,7 @@ export async function POST(
     where: { userId_lessonId: { userId, lessonId } },
   });
   if (existing?.completed) {
-    return NextResponse.json({ alreadyCompleted: true, xpEarned: 0 });
+    return NextResponse.json({ alreadyCompleted: true, xpEarned: 0, gemsEarned: 0 });
   }
 
   const content = lesson.content as QuizContent & CodeContent;
@@ -116,6 +116,7 @@ export async function POST(
       where: { id: userId },
       data: {
         xpTotal: { increment: lesson.xpReward },
+        gems: { increment: lesson.gemsReward },
         streakAtual: newStreak,
         ultimaAtividade: new Date(),
       },
@@ -129,6 +130,7 @@ export async function POST(
           lessonTitle: lesson.title,
           trackTitle: lesson.track.title,
           xpEarned: lesson.xpReward,
+          gemsEarned: lesson.gemsReward,
         },
       },
     }),
@@ -153,6 +155,7 @@ export async function POST(
   return NextResponse.json({
     correct: true,
     xpEarned: lesson.xpReward,
+    gemsEarned: lesson.gemsReward,
     trackSlug: lesson.track.slug,
   });
 }

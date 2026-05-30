@@ -4,6 +4,7 @@ interface CompleteLessonResult {
   ok: boolean;
   alreadyCompleted?: boolean;
   xpEarned?: number;
+  gemsEarned?: number;
 }
 
 export async function submitLessonCompletion(
@@ -22,6 +23,7 @@ export async function submitLessonCompletion(
     ok: res.ok || !!data.alreadyCompleted,
     alreadyCompleted: data.alreadyCompleted,
     xpEarned: data.xpEarned,
+    gemsEarned: data.gemsEarned,
   };
 }
 
@@ -29,8 +31,13 @@ export function navigateAfterLessonComplete(
   router: AppRouterInstance,
   trackSlug: string,
   lessonId: string,
-  xp: number
+  rewards: { xp: number; gems: number }
 ) {
-  router.push(`/trilhas/${trackSlug}?completed=${lessonId}&xp=${xp}`);
+  const params = new URLSearchParams({
+    completed: lessonId,
+    xp: String(rewards.xp),
+    gems: String(rewards.gems),
+  });
+  router.push(`/trilhas/${trackSlug}?${params.toString()}`);
   router.refresh();
 }

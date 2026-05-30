@@ -44,6 +44,7 @@ model User {
   image           String?
   passwordHash    String?   @map("password_hash")
   xpTotal         Int       @default(0) @map("xp_total")
+  gems            Int       @default(0)
   streakAtual     Int       @default(0) @map("streak_atual")
   ultimaAtividade DateTime? @map("ultima_atividade")
   createdAt       DateTime  @default(now()) @map("created_at")
@@ -146,8 +147,9 @@ model Lesson {
   content   Json
   solution  Json?
   order     Int        @default(0)
-  xpReward  Int        @default(10) @map("xp_reward")
-  createdAt DateTime   @default(now()) @map("created_at")
+  xpReward   Int @default(10) @map("xp_reward")
+  gemsReward Int @default(5) @map("gems_reward")
+  createdAt  DateTime @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
 
   track    Track          @relation(fields: [trackId], references: [id], onDelete: Cascade)
