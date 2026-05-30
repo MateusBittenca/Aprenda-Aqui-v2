@@ -3,6 +3,7 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 interface CompleteLessonResult {
   ok: boolean;
   alreadyCompleted?: boolean;
+  incorrect?: boolean;
   xpEarned?: number;
   gemsEarned?: number;
 }
@@ -22,6 +23,7 @@ export async function submitLessonCompletion(
   return {
     ok: res.ok || !!data.alreadyCompleted,
     alreadyCompleted: data.alreadyCompleted,
+    incorrect: res.status === 422 || data.correct === false,
     xpEarned: data.xpEarned,
     gemsEarned: data.gemsEarned,
   };

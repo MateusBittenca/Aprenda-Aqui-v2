@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
 import { prisma } from "database";
 import { QuizLesson } from "@/components/lesson/quiz-lesson";
 import { CodeLesson } from "@/components/lesson/code-lesson";
+import { authOptions } from "@/lib/auth";
 
 interface LessonPageProps {
   params: { lessonId: string };
@@ -42,7 +44,18 @@ export default async function LessonPage({ params }: LessonPageProps) {
     notFound();
   }
 
+  const session = await getServerSession(authOptions);
+  let initialGems = 0;
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { gems: true },
+    });
+    initialGems = user?.gems ?? 0;
+  }
+
   const content = lesson.content as LessonContent;
+  const solution = lesson.solution as { contains?: string } | null;
 
   if (lesson.type === "QUIZ") {
     return (
@@ -54,6 +67,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         xpReward={lesson.xpReward}
         gemsReward={lesson.gemsReward}
         trackSlug={lesson.track.slug}
+        initialGems={initialGems}
       />
     );
   }
@@ -72,6 +86,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
       xpReward={lesson.xpReward}
       gemsReward={lesson.gemsReward}
       trackSlug={lesson.track.slug}
+      initialGems={initialGems}
+      validationContains={solution?.contains ?? null}
       mode={mode}
     />
   );

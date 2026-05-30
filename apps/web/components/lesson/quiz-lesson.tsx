@@ -7,9 +7,11 @@ import {
   navigateAfterLessonComplete,
   submitLessonCompletion,
 } from "@/lib/lesson-completion";
+import { useLessonLives } from "@/hooks/use-lesson-lives";
 import { LessonHeader } from "./lesson-header";
 import { LessonFooter } from "./lesson-footer";
 import { MascotTip } from "./mascot-tip";
+import { OutOfLivesModal } from "./out-of-lives-modal";
 
 interface QuizQuestion {
   question: string;
@@ -25,10 +27,10 @@ interface QuizLessonProps {
   xpReward: number;
   gemsReward: number;
   trackSlug: string;
+  initialGems: number;
 }
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
-const MAX_LIVES = 5;
 
 export function QuizLesson({
   lessonId,
@@ -38,15 +40,26 @@ export function QuizLesson({
   xpReward,
   gemsReward,
   trackSlug,
+  initialGems,
 }: QuizLessonProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [footerState, setFooterState] = useState<"idle" | "correct" | "incorrect">("idle");
-  const [lives, setLives] = useState(MAX_LIVES);
   const [completing, setCompleting] = useState(false);
   const [completeError, setCompleteError] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
+
+  const {
+    lives,
+    gems,
+    gemCost,
+    outOfLives,
+    refilling,
+    refillError,
+    canAffordRefill,
+    loseLife,
+    restoreLives,
+  } = useLessonLives(initialGems);
 
   if (questions.length === 0) {
     return (
@@ -59,6 +72,7 @@ export function QuizLesson({
   const question = questions[currentIndex];
   const progress = ((currentIndex + (footerState === "correct" ? 1 : 0)) / questions.length) * 100;
   const isLastQuestion = currentIndex === questions.length - 1;
+  const lessonBlocked = outOfLives;
 
   async function completeLesson(correctIndex: number) {
     setCompleting(true);
@@ -74,8 +88,8 @@ export function QuizLesson({
       }
 
       const xp = result.xpEarned ?? xpReward;
-      const gems = result.gemsEarned ?? gemsReward;
-      navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems });
+      const gemsEarned = result.gemsEarned ?? gemsReward;
+      navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems: gemsEarned });
     } catch (err) {
       console.error("[quiz] erro de rede", err);
       setCompleteError(true);
@@ -83,8 +97,16 @@ export function QuizLesson({
     }
   }
 
+  async function handleRefill() {
+    const restored = await restoreLives();
+    if (restored) {
+      setFooterState("idle");
+      setSelectedIndex(null);
+    }
+  }
+
   function handleCheck() {
-    if (gameOver) return;
+    if (lessonBlocked) return;
 
     if (footerState === "correct") {
       if (isLastQuestion) {
@@ -108,36 +130,21 @@ export function QuizLesson({
     if (selectedIndex === question.correctIndex) {
       setFooterState("correct");
     } else {
-      const newLives = lives - 1;
-      setLives(newLives);
-      if (newLives <= 0) {
-        setGameOver(true);
-      }
+      loseLife();
       setFooterState("incorrect");
     }
-  }
-
-  if (gameOver) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-surface gap-6 p-8 text-center">
-        <div className="text-6xl">💔</div>
-        <h2 className="text-3xl font-black font-display text-on-background">Sem vidas!</h2>
-        <p className="text-on-surface-variant">Você ficou sem vidas nesta lição.</p>
-        <button
-          onClick={() => router.push("/trilhas")}
-          className="mt-4 px-8 py-3 bg-primary-container text-on-primary-container font-bold rounded-full block-shadow-primary bouncy-transition"
-        >
-          Voltar às Trilhas
-        </button>
-      </div>
-    );
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
       <LessonHeader progress={progress} lives={lives} />
 
-      <main className="flex-grow pt-16 pb-24 flex flex-col items-center px-4">
+      <main
+        className={cn(
+          "flex-grow pt-16 pb-24 flex flex-col items-center px-4",
+          lessonBlocked && "pointer-events-none opacity-60"
+        )}
+      >
         <div className="w-full max-w-4xl mt-6 flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <p className="text-xs font-bold text-secondary uppercase tracking-wider">
@@ -160,9 +167,10 @@ export function QuizLesson({
                 <button
                   key={index}
                   onClick={() => {
-                    if (footerState !== "idle") return;
+                    if (footerState !== "idle" || lessonBlocked) return;
                     setSelectedIndex(index);
                   }}
+                  disabled={lessonBlocked}
                   className={cn(
                     "flex items-center gap-4 p-4 bg-surface border-2 rounded-2xl block-shadow-card bouncy-transition text-left hover:bg-surface-container-low",
                     isSelected
@@ -192,7 +200,7 @@ export function QuizLesson({
 
       <LessonFooter
         state={footerState}
-        canCheck={selectedIndex !== null}
+        canCheck={selectedIndex !== null && !lessonBlocked}
         feedbackTitle={
           footerState === "correct"
             ? "Muito bem! 🎉"
@@ -221,6 +229,17 @@ export function QuizLesson({
                 : undefined
         }
         onCheck={handleCheck}
+      />
+
+      <OutOfLivesModal
+        open={outOfLives}
+        gems={gems}
+        gemCost={gemCost}
+        trackSlug={trackSlug}
+        refilling={refilling}
+        error={refillError}
+        canAffordRefill={canAffordRefill}
+        onRefill={handleRefill}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { notifyFriendsOfLessonActivity } from "@/lib/notifications";
+import { validateCodeAnswer, validateQuizAnswer } from "@/lib/lesson-validation";
 import { prisma, ActivityType } from "database";
 
 interface QuizContent {
@@ -15,28 +16,6 @@ interface CodeContent {
 interface SolutionShape {
   contains?: string;
   correctIndex?: number;
-}
-
-function validateQuizAnswer(
-  content: QuizContent,
-  solution: SolutionShape | null,
-  answer: unknown
-): boolean {
-  const questions = content.questions ?? [];
-  if (questions.length === 0) return false;
-  const selectedIndex = typeof answer === "number" ? answer : -1;
-  const expected = solution?.correctIndex ?? questions[0]?.correctIndex ?? -1;
-  return selectedIndex === expected;
-}
-
-function validateCodeAnswer(
-  _content: CodeContent,
-  solution: SolutionShape | null,
-  answer: unknown
-): boolean {
-  if (!solution?.contains) return typeof answer === "string" && answer.trim().length > 0;
-  const code = typeof answer === "string" ? answer.trim().toLowerCase() : "";
-  return code.includes(solution.contains.replace(/<[^>]+>/g, "").trim().toLowerCase());
 }
 
 function calcStreak(currentStreak: number, ultimaAtividade: Date | null): number {
@@ -91,7 +70,7 @@ export async function POST(
   const isCorrect =
     lesson.type === "QUIZ"
       ? validateQuizAnswer(content, solution, body.answer)
-      : validateCodeAnswer(content, solution, body.answer);
+      : validateCodeAnswer(solution, body.answer);
 
   if (!isCorrect) {
     return NextResponse.json({ correct: false }, { status: 422 });

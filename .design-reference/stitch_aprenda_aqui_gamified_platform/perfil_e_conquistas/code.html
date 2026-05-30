@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tactile-button {
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2);
+        }
+        .tactile-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+        .tactile-card {
+            box-shadow: 0 4px 0 0 #e3e2e1;
+        }
+        .bouncy-hover:hover {
+            transform: scale(1.02);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .progress-glow {
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#1f5100",
+                        "on-primary-container": "#1e5000",
+                        "secondary": "#575a89",
+                        "on-background": "#1a1c1b",
+                        "background": "#faf9f8",
+                        "on-tertiary-fixed": "#241a00",
+                        "primary": "#2b6c00",
+                        "surface-container-low": "#f4f3f2",
+                        "primary-fixed-dim": "#6be026",
+                        "tertiary-container": "#ddad00",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eeeeec",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dadad9",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#c6c8fd",
+                        "surface-container-high": "#e9e8e7",
+                        "surface-bright": "#faf9f8",
+                        "on-surface-variant": "#3f4a36",
+                        "on-tertiary-container": "#574300",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e3e2e1",
+                        "surface-tint": "#2b6c00",
+                        "outline-variant": "#becbb1",
+                        "surface-variant": "#e3e2e1",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-primary-fixed": "#082100",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#58cc02",
+                        "primary-fixed": "#87fe45",
+                        "inverse-on-surface": "#f1f1ef",
+                        "on-surface": "#1a1c1b",
+                        "outline": "#6f7b64",
+                        "tertiary-fixed-dim": "#f4bf00",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#755b00",
+                        "surface": "#faf9f8",
+                        "secondary-fixed": "#e0e0ff",
+                        "tertiary-fixed": "#ffdf92",
+                        "on-secondary-fixed": "#141742",
+                        "on-secondary-container": "#4f5280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "container-max": "1200px",
+                        "base": "8px",
+                        "lg": "40px",
+                        "xl": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Nunito Sans"],
+                        "display-md": ["Nunito Sans"],
+                        "label-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "display-md": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-md h-xl max-w-container-max mx-auto bg-surface dark:bg-background border-b-4 border-surface-variant dark:border-outline-variant">
+<div class="flex items-center gap-base">
+<span class="font-headline-lg text-headline-lg text-primary dark:text-primary-fixed font-black tracking-tight">Aprenda Aqui!</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center gap-sm bg-surface-container-high px-md py-xs rounded-full border-b-2 border-surface-variant">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-lg text-label-lg text-on-surface">15</span>
+</div>
+<div class="hidden md:flex items-center gap-sm bg-surface-container-high px-md py-xs rounded-full border-b-2 border-surface-variant">
+<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="font-label-lg text-label-lg text-on-surface">500 XP</span>
+</div>
+<img alt="Student avatar" class="w-10 h-10 rounded-full border-2 border-primary-container" data-alt="A vibrant 3D stylized avatar of a young tech explorer wearing modern headphones and a tech-inspired jacket. The character has a friendly expression, set against a clean, light-mode background with soft gradients of electric green and deep navy. The artistic style is reminiscent of high-end mobile game character designs, with clean lines and saturated colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtiFQkvM1pw4eHeSEAMvsQemOaUqtuiu1k0jvez-RP0hBzziRshnouMemIaOJpKjsGVfyprG_L1L0YhT5pFsU7Q39a8fC85FQhNCAadGJal8OdYVpxnQsBQEkKytUfJC2KFGcOkG8fjK3hPezOm-96bDsYuuhfXQ5GTm28h_O_9_httFCEaEF3Q2kWIX8hedTS1EIaJ43_E-eC2zuSSO6ZNjpLL0Aha_2HorZFMXbfhzmT2vB-sCqPDCLV33oVnCJuEkrG_gJesMU"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden lg:flex flex-col h-screen fixed left-0 top-0 py-lg px-md w-64 bg-surface-container-low dark:bg-surface-container-lowest border-r-4 border-surface-variant dark:border-outline-variant pt-xl mt-xl">
+<div class="mb-lg px-md">
+<h2 class="font-headline-md text-headline-md text-primary">Dev Apprentice</h2>
+<p class="font-body-md text-body-md text-secondary">Lvl. 12 Explorer</p>
+</div>
+<ul class="flex-1">
+<li class="mb-base">
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg">Dashboard</span>
+</a>
+</li>
+<li class="mb-base">
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-lg">Ranking</span>
+</a>
+</li>
+<li class="mb-base">
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-lg">Academy</span>
+</a>
+</li>
+<li class="mb-base">
+<a class="flex items-center gap-base bg-primary-container text-on-primary-container rounded-lg border-b-4 border-primary p-md font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pill</span>
+<span class="font-label-lg">Profile</span>
+</a>
+</li>
+</ul>
+<button class="tactile-button bg-tertiary-container text-on-tertiary-container font-headline-md py-md rounded-xl mb-lg border-b-4 border-[#a68200] bouncy-hover">
+            Upgrade to Pro
+        </button>
+</nav>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-xl px-gutter md:px-lg pb-xl">
+<div class="max-w-container-max mx-auto mt-lg">
+<!-- Header Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-lg items-center mb-xl">
+<div class="md:col-span-4 flex flex-col items-center md:items-start">
+<div class="relative group">
+<img alt="Student profile picture" class="w-40 h-40 md:w-56 md:h-56 rounded-full border-8 border-primary-container tactile-card p-1 bg-white" data-alt="A detailed 3D avatar portrait of a student programmer with a friendly smile, wearing oversized navy blue headphones and a bright green hoodie. The lighting is soft and studio-quality, emphasizing the smooth textures and vibrant colors. The background is a minimalist, high-contrast light gray that highlights the character's energetic and approachable persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBujKWNoSbyk4SAt978lP0W0jKAkm-wzPiYK3DRHNl6SiyD9uAp3HszhG-ZpbIfBjUBqg29J5qHF36VMiPUFxPjQjWzStI9cC8B3WttNOHgJyzsZECZdqyJPnVugnu2swYsR-NK_5tNz_j7kKUrmMl3WHFPs2eAgt3GZH1UWdu1PCV4ru8UGu-f19y4Ey9MH2XyKpoR10ylpq4qJeIi9E6PEntsV_OgEsFiCcSavr5YMEadW8lfipUa4Y58Br5XCDUm5ZPi3BJvFSU"/>
+<div class="absolute bottom-4 right-4 bg-primary text-white p-sm rounded-full tactile-button border-b-4 border-[#1f5100]">
+<span class="material-symbols-outlined">edit</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-8 text-center md:text-left">
+<div class="flex flex-col md:flex-row md:items-center gap-md mb-md">
+<h1 class="font-display-md text-display-md text-on-background">Dev Apprentice</h1>
+<button class="w-fit mx-auto md:mx-0 tactile-button bg-surface-container-highest text-on-surface px-lg py-sm rounded-full border-b-4 border-outline-variant font-label-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-md">settings</span>
+                            EDIT PROFILE
+                        </button>
+</div>
+<div class="inline-flex items-center gap-sm bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-bold mb-md border-b-2 border-secondary">
+<span class="material-symbols-outlined">verified</span>
+                        Lvl. 12 Explorer
+                    </div>
+<div class="w-full max-w-md bg-surface-container-high h-6 rounded-full overflow-hidden mb-xs border-2 border-surface-variant">
+<div class="bg-primary-container h-full w-3/4 progress-glow rounded-full"></div>
+</div>
+<p class="font-label-lg text-secondary">750 / 1000 XP to Level 13</p>
+</div>
+</section>
+<!-- Stats Dashboard -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md mb-xl">
+<div class="bg-white p-md rounded-xl border-2 border-surface-variant tactile-card flex items-center gap-md bouncy-hover">
+<div class="w-16 h-16 bg-primary-container/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div>
+<p class="font-label-lg text-secondary">Total XP</p>
+<p class="font-display-md text-headline-lg text-on-background">12,450</p>
+</div>
+</div>
+<div class="bg-white p-md rounded-xl border-2 border-surface-variant tactile-card flex items-center gap-md bouncy-hover">
+<div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-500 text-3xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<p class="font-label-lg text-secondary">Current Streak</p>
+<p class="font-display-md text-headline-lg text-on-background">15 Days</p>
+</div>
+</div>
+<div class="bg-white p-md rounded-xl border-2 border-surface-variant tactile-card flex items-center gap-md bouncy-hover">
+<div class="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div>
+<p class="font-label-lg text-secondary">Lessons Completed</p>
+<p class="font-display-md text-headline-lg text-on-background">84</p>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Achievements Gallery -->
+<section class="lg:col-span-8 bg-white p-lg rounded-xl border-2 border-surface-variant tactile-card">
+<div class="flex items-center justify-between mb-lg">
+<h3 class="font-headline-lg text-headline-lg text-on-background">Emblemas / Badges</h3>
+<a class="font-label-lg text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-md">
+<!-- Badge 1 -->
+<div class="flex flex-col items-center text-center gap-sm group">
+<div class="w-24 h-24 bg-primary-container rounded-full flex items-center justify-center border-b-4 border-primary transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">code</span>
+</div>
+<p class="font-label-lg text-on-background">HTML Master</p>
+</div>
+<!-- Badge 2 -->
+<div class="flex flex-col items-center text-center gap-sm group">
+<div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center border-b-4 border-orange-700 transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+</div>
+<p class="font-label-lg text-on-background">7 Day Streak</p>
+</div>
+<!-- Badge 3 -->
+<div class="flex flex-col items-center text-center gap-sm group">
+<div class="w-24 h-24 bg-tertiary-container rounded-full flex items-center justify-center border-b-4 border-[#a68200] transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<p class="font-label-lg text-on-background">Problem Solver</p>
+</div>
+<!-- Badge 4 -->
+<div class="flex flex-col items-center text-center gap-sm group">
+<div class="w-24 h-24 bg-secondary rounded-full flex items-center justify-center border-b-4 border-[#141742] transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+<p class="font-label-lg text-on-background">Community Hero</p>
+</div>
+</div>
+</section>
+<!-- Weekly Progress -->
+<section class="lg:col-span-4 bg-white p-lg rounded-xl border-2 border-surface-variant tactile-card">
+<h3 class="font-headline-lg text-headline-lg text-on-background mb-lg">Weekly Progress</h3>
+<div class="flex items-end justify-between h-48 gap-xs">
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-primary-container rounded-t-lg border-b-4 border-primary" style="height: 40%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">MON</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-primary-container rounded-t-lg border-b-4 border-primary" style="height: 70%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">TUE</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-primary-container rounded-t-lg border-b-4 border-primary" style="height: 95%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">WED</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-primary-container rounded-t-lg border-b-4 border-primary" style="height: 30%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">THU</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-primary-container rounded-t-lg border-b-4 border-primary" style="height: 60%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">FRI</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-surface-container-high rounded-t-lg" style="height: 10%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">SAT</span>
+</div>
+<div class="flex flex-col items-center gap-xs flex-1">
+<div class="w-full bg-surface-container-high rounded-t-lg" style="height: 10%;"></div>
+<span class="font-label-lg text-secondary text-[10px]">SUN</span>
+</div>
+</div>
+<div class="mt-lg pt-lg border-t-2 border-surface-variant">
+<div class="flex justify-between items-center">
+<p class="font-body-md font-bold">Best Day</p>
+<p class="text-primary font-black">Wednesday</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t-4 border-surface-variant flex justify-around items-center h-xl z-50">
+<a class="flex flex-col items-center gap-xs text-secondary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">DASHBOARD</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-secondary" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-[10px] font-bold">RANKING</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-secondary" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-bold">ACADEMY</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pill</span>
+<span class="text-[10px] font-bold">PROFILE</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for tactile buttons
+        document.querySelectorAll('.tactile-button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'translateY(2px)';
+                button.style.boxShadow = '0 2px 0 0 rgba(0,0,0,0.2)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'translateY(0)';
+                button.style.boxShadow = '0 4px 0 0 rgba(0,0,0,0.2)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'translateY(0)';
+                button.style.boxShadow = '0 4px 0 0 rgba(0,0,0,0.2)';
+            });
+        });
+    </script>
+</body></html>

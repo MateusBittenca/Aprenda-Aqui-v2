@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { X, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MAX_LIVES } from "@/lib/lesson-lives";
 
 interface LessonHeaderProps {
   progress: number;
@@ -11,7 +13,7 @@ interface LessonHeaderProps {
 
 export function LessonHeader({
   progress,
-  lives = 5,
+  lives = MAX_LIVES,
   exitHref = "/dashboard",
 }: LessonHeaderProps) {
   return (
@@ -33,9 +35,16 @@ export function LessonHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-error font-extrabold text-lg px-2">
-          <Heart className="h-6 w-6 fill-error" />
-          <span>{lives}</span>
+        <div className="flex items-center gap-0.5 px-2" aria-label={`${lives} de ${MAX_LIVES} vidas`}>
+          {Array.from({ length: MAX_LIVES }).map((_, i) => (
+            <Heart
+              key={i}
+              className={cn(
+                "h-6 w-6 transition-colors duration-200",
+                i < lives ? "fill-error text-error" : "text-surface-container-highest"
+              )}
+            />
+          ))}
         </div>
       </div>
     </header>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aprenda Aqui! - Loja de Itens</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e3e2e1",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#2b6c00",
+                    "surface-tint": "#2b6c00",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#dadad9",
+                    "surface-container-low": "#f4f3f2",
+                    "on-secondary-fixed-variant": "#404370",
+                    "surface-bright": "#faf9f8",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#f4bf00",
+                    "background": "#faf9f8",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#ddad00",
+                    "on-surface-variant": "#3f4a36",
+                    "surface": "#faf9f8",
+                    "secondary-fixed-dim": "#c0c2f7",
+                    "inverse-primary": "#6be026",
+                    "on-secondary-container": "#4f5280",
+                    "outline-variant": "#becbb1",
+                    "primary-fixed": "#87fe45",
+                    "inverse-on-surface": "#f1f1ef",
+                    "on-surface": "#1a1c1b",
+                    "on-background": "#1a1c1b",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#58cc02",
+                    "surface-container-highest": "#e3e2e1",
+                    "secondary-container": "#c6c8fd",
+                    "surface-container-high": "#e9e8e7",
+                    "on-primary-fixed": "#082100",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#755b00",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#6be026",
+                    "on-secondary-fixed": "#141742",
+                    "inverse-surface": "#2f3130",
+                    "tertiary-fixed": "#ffdf92",
+                    "on-primary-fixed-variant": "#1f5100",
+                    "on-tertiary-container": "#574300",
+                    "on-primary-container": "#1e5000",
+                    "secondary-fixed": "#e0e0ff",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#eeeeec",
+                    "secondary": "#575a89",
+                    "outline": "#6f7b64",
+                    "on-tertiary-fixed-variant": "#594400"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "lg": "40px",
+                    "xl": "64px",
+                    "sm": "12px",
+                    "md": "24px",
+                    "container-max": "1200px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Nunito Sans"],
+                    "label-lg": ["Plus Jakarta Sans"],
+                    "display-md": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Nunito Sans"],
+                    "display-lg": ["Nunito Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Nunito Sans"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-md": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "800"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "800"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #faf9f8; }
+        .font-nunito { font-family: 'Nunito Sans', sans-serif; }
+        .tactile-btn {
+            box-shadow: 0 4px 0 #1e5000;
+            transition: all 0.1s ease;
+        }
+        .tactile-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1e5000;
+        }
+        .item-card-tactile {
+            box-shadow: 0 4px 0 #e3e2e1;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .item-card-tactile:hover {
+            transform: translateY(-4px);
+        }
+        .active-tab {
+            box-shadow: 0 4px 0 #58cc02;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-x-hidden">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface dark:bg-background border-b-4 border-surface-variant dark:border-outline-variant flex items-center justify-between px-md h-[64px] max-w-full">
+<div class="flex items-center gap-sm">
+<span class="font-headline-lg text-headline-lg text-primary dark:text-primary-fixed font-black tracking-tight">Aprenda Aqui!</span>
+</div>
+<div class="flex items-center gap-md">
+<!-- XP -->
+<div class="flex items-center gap-xs px-sm py-1.5 bg-surface-container-low rounded-full border-2 border-surface-variant">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-lg text-label-lg text-primary font-bold">500 XP</span>
+</div>
+<!-- Gems -->
+<div class="flex items-center gap-xs px-sm py-1.5 bg-surface-container-low rounded-full border-2 border-surface-variant">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="font-label-lg text-label-lg text-secondary font-bold">15</span>
+</div>
+<!-- Profile -->
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Student avatar" class="w-full h-full object-cover" data-alt="A detailed digital illustration of a cheerful student avatar in a flat, modern vector style. The character has a friendly expression, styled hair, and is wearing a sleek collegiate-style jacket. The background is a vibrant, solid lime green circle, reinforcing the high-energy, gamified brand aesthetic of the education app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByAoMNiywCXmHBqtyL4aLHTKieB7Amsllh6GzcxmRYsxWJwIes2DqY4Yhmw998wYf5YXl_sCJl0EvkrecEauJRFPvt4rAE1XTF1rGYoG5dTPvbq1-DRoy5H43YWZPFb7VqiyqMyFTj6-jJaVT5OdpxNwJh5KnifmG4YfNmdQ-Z5Pr1179WBIDeFwWa7dyRiN7DFb60l4kRxC_z6Qy1Yi5GQJ1kaK9703sX7AZAe7uaOJPVNvzoR7r68gSKZWqosya_nyrjNQgP4-Q"/>
+</div>
+</div>
+</header>
+<div class="flex pt-[64px] min-h-screen">
+<!-- SideNavBar Shell -->
+<nav class="hidden lg:flex flex-col h-[calc(100vh-64px)] fixed left-0 top-[64px] py-lg px-md w-64 bg-surface-container-low dark:bg-surface-container-lowest border-r-4 border-surface-variant dark:border-outline-variant">
+<div class="mb-xl px-md">
+<h2 class="font-headline-md text-headline-md text-primary">Dev Apprentice</h2>
+<p class="font-body-md text-body-md text-secondary opacity-70">Lvl. 12 Explorer</p>
+</div>
+<div class="flex flex-col flex-grow">
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg mb-base transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg mb-base transition-colors group" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-lg">Ranking</span>
+</a>
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg mb-base transition-colors group" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-lg">Academy</span>
+</a>
+<a class="flex items-center gap-base bg-primary-container text-on-primary-container rounded-lg border-b-4 border-primary p-md font-bold mb-base scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-lg">Loja</span>
+</a>
+<a class="flex items-center gap-base text-secondary dark:text-secondary-fixed-dim p-md hover:bg-surface-variant/50 rounded-lg mb-base transition-colors group" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="font-label-lg">Profile</span>
+</a>
+</div>
+<div class="mt-auto px-md pb-md">
+<button class="w-full py-md bg-tertiary text-on-tertiary font-bold rounded-xl border-b-4 border-[#594400] transition-all hover:translate-y-0.5 hover:border-b-2 active:translate-y-1 active:border-b-0">
+                    Upgrade to Pro
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow lg:ml-64 p-gutter md:p-lg max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<header class="mb-xl text-center md:text-left">
+<h1 class="font-display-md text-display-md text-primary mb-xs">Loja de Itens</h1>
+<p class="font-body-lg text-body-lg text-secondary">Troque suas conquistas por cosméticos lendários!</p>
+</header>
+<!-- Category Tabs -->
+<div class="flex overflow-x-auto gap-md mb-xl pb-base no-scrollbar">
+<button class="active-tab whitespace-nowrap bg-primary-container text-on-primary-container font-bold px-lg py-sm rounded-xl border-b-4 border-primary transition-all">
+                    Destaques
+                </button>
+<button class="whitespace-nowrap bg-surface-container-high text-secondary font-bold px-lg py-sm rounded-xl hover:bg-surface-variant transition-all">
+                    Power-ups
+                </button>
+<button class="whitespace-nowrap bg-surface-container-high text-secondary font-bold px-lg py-sm rounded-xl hover:bg-surface-variant transition-all">
+                    Avatares
+                </button>
+<button class="whitespace-nowrap bg-surface-container-high text-secondary font-bold px-lg py-sm rounded-xl hover:bg-surface-variant transition-all">
+                    Temas
+                </button>
+</div>
+<!-- Shop Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-md">
+<!-- Item 1: Protetor de Ofensiva -->
+<div class="item-card-tactile flex flex-col bg-surface-container-lowest border-2 border-surface-variant rounded-lg p-md h-full">
+<div class="relative w-full aspect-square bg-blue-50 rounded-lg flex items-center justify-center mb-md overflow-hidden">
+<span class="material-symbols-outlined text-6xl text-blue-400" style="font-variation-settings: 'FILL' 1;">ac_unit</span>
+<div class="absolute inset-0 flex items-center justify-center scale-75 opacity-20">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Protetor de Ofensiva</h3>
+<p class="font-body-md text-body-md text-secondary flex-grow mb-md">Evita que você perca sua sequência se esquecer de praticar por um dia.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-bold text-primary">200 XP</span>
+</div>
+<button class="tactile-btn bg-primary-container text-on-primary-container px-md py-2 rounded-xl font-bold">Comprar</button>
+</div>
+</div>
+<!-- Item 2: Avatar Robô Dourado -->
+<div class="item-card-tactile flex flex-col bg-surface-container-lowest border-2 border-surface-variant rounded-lg p-md h-full">
+<div class="relative w-full aspect-square bg-yellow-50 rounded-lg flex items-center justify-center mb-md overflow-hidden">
+<img alt="Golden Robot Avatar" class="w-2/3 h-2/3" data-alt="A premium 3D rendered robot head avatar with polished gold plating and glowing cyan eyes. The robot has a friendly, high-tech aesthetic with intricate mechanical details and smooth surfaces. The lighting is dramatic and studio-quality, casting soft reflections on the gold surface, all set against a clean, off-white studio background to match the app's tactile theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRb8aaLxNJz756xwysoZIPH8k4ZmiqlEhpleQ1hnt1BxowfYXHSZ46cB1eGeeQCzmLT5sEqpKhy2YKQ-4KqGcfRjCvHOFGH00N0WE-sgVePzkjyfextrIky334H4rrYwwBYyGIOdW6UeU1Cm5-T60SZ_veBbXyNAnyAR7Fc0zyyQ1fP0Bevpe0_XsEQF2P82rsB97I_x74rsK1w4LnZgIfGCxJ1N_frta0xvDrunqAeDUfvMOJd51dhh-kDSvaGa_7RtEYBRxcHG8"/>
+<div class="absolute top-2 right-2 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-black px-2 py-1 rounded-full">LENDÁRIO</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Avatar Robô Dourado</h3>
+<p class="font-body-md text-body-md text-secondary flex-grow mb-md">Destaque-se no ranking com este avatar exclusivo de ouro maciço.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="font-bold text-secondary">50</span>
+</div>
+<button class="tactile-btn bg-primary-container text-on-primary-container px-md py-2 rounded-xl font-bold">Comprar</button>
+</div>
+</div>
+<!-- Item 3: Tema Dark Synthwave -->
+<div class="item-card-tactile flex flex-col bg-surface-container-lowest border-2 border-surface-variant rounded-lg p-md h-full">
+<div class="relative w-full aspect-square bg-[#1C1F4A] rounded-lg p-sm mb-md flex flex-col gap-2 overflow-hidden">
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-red-400"></div>
+<div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+<div class="w-2 h-2 rounded-full bg-green-400"></div>
+</div>
+<div class="h-2 w-1/2 bg-pink-500/50 rounded-full"></div>
+<div class="h-2 w-3/4 bg-purple-500/50 rounded-full"></div>
+<div class="h-2 w-2/3 bg-cyan-500/50 rounded-full"></div>
+<div class="absolute bottom-0 right-0 p-2 opacity-30">
+<span class="material-symbols-outlined text-6xl text-pink-400">code</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Tema Dark Synthwave</h3>
+<p class="font-body-md text-body-md text-secondary flex-grow mb-md">Transforme sua interface com luzes neon e uma paleta de cores retrô futurista.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="font-bold text-secondary">150</span>
+</div>
+<button class="tactile-btn bg-primary-container text-on-primary-container px-md py-2 rounded-xl font-bold">Comprar</button>
+</div>
+</div>
+<!-- Item 4: Bônus de XP (2h) -->
+<div class="item-card-tactile flex flex-col bg-surface-container-lowest border-2 border-surface-variant rounded-lg p-md h-full">
+<div class="relative w-full aspect-square bg-green-50 rounded-lg flex items-center justify-center mb-md overflow-hidden">
+<div class="relative">
+<span class="material-symbols-outlined text-7xl text-primary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<div class="absolute -top-1 -right-2 bg-primary-fixed text-on-primary-fixed font-black text-xs px-2 py-1 rounded-lg border-2 border-white shadow-sm">2X</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Bônus de XP (2h)</h3>
+<p class="font-body-md text-body-md text-secondary flex-grow mb-md">Ganhe o dobro de pontos em todas as atividades durante duas horas seguidas.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-bold text-primary">100 XP</span>
+</div>
+<button class="tactile-btn bg-primary-container text-on-primary-container px-md py-2 rounded-xl font-bold">Comprar</button>
+</div>
+</div>
+</div>
+<!-- Promotion Bento Grid Section -->
+<section class="mt-xl grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="md:col-span-2 bg-secondary-container rounded-lg p-lg flex flex-col md:flex-row items-center gap-lg border-b-4 border-secondary overflow-hidden group">
+<div class="flex-grow">
+<span class="inline-block bg-on-secondary-container text-white font-bold px-3 py-1 rounded-full text-xs mb-md">PROMOÇÃO LIMITADA</span>
+<h2 class="font-display-md text-display-md text-on-secondary-container mb-sm">Pacote Iniciante</h2>
+<p class="font-body-lg text-on-secondary-container opacity-80 mb-md">Consiga 100 Gems + 3 Protetores de Ofensiva com 40% de desconto!</p>
+<button class="bg-primary-container text-on-primary-container font-black py-md px-xl rounded-xl tactile-btn">Resgatar Agora</button>
+</div>
+<div class="relative w-48 h-48 shrink-0 flex items-center justify-center">
+<div class="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+<span class="material-symbols-outlined text-8xl text-secondary animate-bounce">redeem</span>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-lg p-lg border-b-4 border-surface-variant flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-5xl text-tertiary mb-md">workspace_premium</span>
+<h3 class="font-headline-md text-tertiary mb-xs">Assinatura Premium</h3>
+<p class="font-body-md text-secondary mb-md">Gems ilimitadas e temas exclusivos mensalmente.</p>
+<a class="text-primary font-bold hover:underline" href="#">Ver planos →</a>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Nav Bar (Sync with Platform Rule) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full bg-surface border-t-4 border-surface-variant flex items-center justify-around px-md h-xl z-50">
+<a class="flex flex-col items-center gap-xs p-base text-secondary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-xs p-base text-secondary" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+</a>
+<a class="flex flex-col items-center gap-xs p-base text-secondary" href="#">
+<span class="material-symbols-outlined">school</span>
+</a>
+<a class="flex flex-col items-center gap-xs p-base text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</a>
+<a class="flex flex-col items-center gap-xs p-base text-secondary" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if(this.innerText === 'Comprar') {
+                    const originalText = this.innerText;
+                    this.innerText = 'Sucesso!';
+                    this.classList.add('scale-95');
+                    this.style.backgroundColor = '#2b6c00';
+                    this.style.color = 'white';
+                    
+                    setTimeout(() => {
+                        this.innerText = originalText;
+                        this.classList.remove('scale-95');
+                        this.style.backgroundColor = '';
+                        this.style.color = '';
+                    }, 2000);
+                }
+            });
+        });
+
+        // Tab switching simulation
+        const tabs = document.querySelectorAll('.flex.overflow-x-auto button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('active-tab', 'bg-primary-container', 'text-on-primary-container', 'border-b-4', 'border-primary');
+                    t.classList.add('bg-surface-container-high', 'text-secondary');
+                });
+                tab.classList.add('active-tab', 'bg-primary-container', 'text-on-primary-container', 'border-b-4', 'border-primary');
+                tab.classList.remove('bg-surface-container-high', 'text-secondary');
+            });
+        });
+    </script>
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-md bg-black/60 backdrop-blur-sm" id="purchase-success-modal">
+<div class="bg-surface-container-lowest rounded-xl border-b-8 border-surface-variant max-w-md w-full p-lg flex flex-col items-center text-center animate-[bounce_0.5s_ease-in-out]">
+<div class="w-24 h-24 bg-primary-container rounded-full flex items-center justify-center mb-md shadow-lg">
+<span class="material-symbols-outlined text-on-primary-container text-6xl animate-pulse" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<h2 class="font-display-md text-display-md text-on-surface mb-sm">¡Compra Realizada com Sucesso!</h2>
+<p class="font-body-lg text-secondary mb-lg">
+      Você adquiriu o <span class="font-bold text-on-surface">Tema Dark Synthwave</span>
+</p>
+<button class="w-full py-md bg-[#58CC02] text-on-primary-container font-black rounded-full border-b-4 border-[#1e5000] tactile-btn text-body-lg mb-md">
+      Equipar Agora
+    </button>
+<button class="text-secondary font-bold hover:underline" onclick="document.getElementById('purchase-success-modal').classList.add('hidden')">
+      Voltar à Loja
+    </button>
+</div>
+</div></body></html>
