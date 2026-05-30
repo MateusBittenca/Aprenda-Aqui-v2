@@ -1,22 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
-import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leaderboard";
+import { LEAGUE_LABELS } from "@/lib/leaderboard";
 import { formatNumber, cn } from "@/lib/utils";
-import { MASCOT } from "@/lib/mascot";
 import { FriendActionButtonProfile } from "@/components/community/friend-action-button";
+import { ProfileBadges } from "@/components/profile/profile-badges";
+import { ProfileWeeklyProgress } from "@/components/profile/profile-weekly-progress";
 import type { FriendshipView } from "@/lib/community";
 import type { PublicUserProfile } from "@/lib/public-profile";
 import {
   ArrowLeft,
   BookOpen,
-  ChevronRight,
   Flame,
-  Map,
+  Pencil,
   Settings,
-  Shield,
-  Trophy,
-  Gem,
-  Zap,
+  Star,
+  Verified,
 } from "lucide-react";
 
 interface UserProfileViewProps {
@@ -27,6 +25,14 @@ interface UserProfileViewProps {
   friendshipId?: string | null;
 }
 
+function getLevelTitle(level: number): string {
+  if (level >= 20) return "Lenda do código";
+  if (level >= 15) return "Mestre";
+  if (level >= 10) return "Especialista";
+  if (level >= 5) return "Explorador";
+  return "Iniciante";
+}
+
 export function UserProfileView({
   profile,
   isOwnProfile,
@@ -34,17 +40,13 @@ export function UserProfileView({
   friendshipStatus = "none",
   friendshipId = null,
 }: UserProfileViewProps) {
-  const xpProgress = Math.min(((1000 - profile.xpToNextLevel) / 1000) * 100, 100);
+  const xpInLevel = 1000 - profile.xpToNextLevel;
+  const xpProgress = Math.min((xpInLevel / 1000) * 100, 100);
+  const levelTitle = getLevelTitle(profile.level);
   const leagueLabel = LEAGUE_LABELS[profile.league];
-  const leagueColor = LEAGUE_COLORS[profile.league];
-
-  const memberSince = new Intl.DateTimeFormat("pt-BR", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(profile.createdAt));
 
   return (
-    <div className="max-w-[800px] mx-auto">
+    <div className="max-w-[1200px] mx-auto">
       {!isOwnProfile && (
         <div className="flex flex-wrap gap-4 mb-6">
           <Link
@@ -63,184 +65,150 @@ export function UserProfileView({
         </div>
       )}
 
-      <div className="card-elevation rounded-4xl p-8 border-2 border-surface-container-highest mb-6 flex flex-col sm:flex-row items-center gap-6">
-        {profile.image ? (
-          <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-primary-container">
-            <Image src={profile.image} alt={profile.name} fill className="object-cover" />
-          </div>
-        ) : (
-          <div className="w-24 h-24 rounded-full bg-primary-container flex items-center justify-center text-4xl font-black text-on-primary-container shrink-0">
-            {profile.name.charAt(0).toUpperCase()}
-          </div>
-        )}
-
-        <div className="flex-1 text-center sm:text-left">
-          <h1 className="text-3xl font-extrabold text-on-background font-display">
-            {profile.name}
-          </h1>
-          {isOwnProfile && email && (
-            <p className="text-on-surface-variant mt-1">{email}</p>
-          )}
-          <p className="text-xs text-outline mt-1">Membro desde {memberSince}</p>
-
-          <div className="flex flex-wrap gap-2 mt-4 justify-center sm:justify-start">
-            <span className="px-3 py-1 bg-primary-container/20 text-primary text-sm font-bold rounded-full">
-              Nível {profile.level}
-            </span>
-            <span className="px-3 py-1 bg-error-container text-error text-sm font-bold rounded-full flex items-center gap-1">
-              <Flame className="h-3.5 w-3.5 fill-error" />
-              {profile.streakAtual} dias de ofensiva
-            </span>
-            <span
-              className={cn(
-                "px-3 py-1 bg-surface-container-high text-sm font-bold rounded-full flex items-center gap-1",
-                leagueColor
-              )}
-            >
-              <Shield className="h-3.5 w-3.5" />
-              {leagueLabel}
-            </span>
-            {profile.weeklyRank !== null && (
-              <span className="px-3 py-1 bg-tertiary-container/30 text-tertiary text-sm font-bold rounded-full flex items-center gap-1">
-                <Trophy className="h-3.5 w-3.5" />
-                #{profile.weeklyRank} no ranking semanal
-              </span>
+      {/* Header: avatar + identidade + progresso de nível */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start mb-10">
+        <div className="md:col-span-4 flex justify-center">
+          <div className="relative inline-flex">
+            {profile.image ? (
+              <div className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-container ring-4 ring-surface block-shadow-card bg-white">
+                <Image src={profile.image} alt={profile.name} fill className="object-cover" />
+              </div>
+            ) : (
+              <div className="grid w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 place-items-center rounded-full border-4 border-primary-container ring-4 ring-surface block-shadow-card bg-gradient-to-br from-primary-container to-primary shadow-inner">
+                <span className="font-display text-4xl sm:text-5xl font-black leading-none text-on-primary-container">
+                  {profile.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            {isOwnProfile && (
+              <Link
+                href="/configuracoes"
+                className="absolute bottom-0 right-0 z-10 flex h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-primary text-on-primary block-shadow-primary bouncy-transition hover:brightness-110 active:translate-y-0.5"
+                aria-label="Editar perfil"
+              >
+                <Pencil className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+              </Link>
             )}
           </div>
         </div>
-      </div>
 
-      <div className="card-elevation rounded-4xl p-6 border-2 border-surface-container-highest mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <span className="font-bold text-on-background">
-            Progresso para o Nível {profile.level + 1}
-          </span>
-          <span className="text-sm text-on-surface-variant font-bold">
-            {formatNumber(profile.xpToNextLevel)} XP restantes
-          </span>
-        </div>
-        <div className="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden">
-          <div
-            className="bg-primary-container h-full rounded-full transition-all duration-500"
-            style={{ width: `${xpProgress}%` }}
-          />
-        </div>
-        <p className="text-xs text-on-surface-variant mt-2">
-          {formatNumber(profile.xpTotal)} XP acumulados no total
-        </p>
-      </div>
+        <div className="md:col-span-8 text-center md:text-left space-y-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-on-background font-display tracking-tight">
+              {profile.name}
+            </h1>
+            {isOwnProfile && email && (
+              <p className="text-on-surface-variant text-sm">{email}</p>
+            )}
+          </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        {[
-          {
-            icon: Gem,
-            label: "Gemas",
-            value: formatNumber(profile.gems),
-            color: "text-secondary",
-          },
-          {
-            icon: Zap,
-            label: "XP Total",
-            value: formatNumber(profile.xpTotal),
-            color: "text-primary",
-          },
-          {
-            icon: Flame,
-            label: "Ofensiva",
-            value: `${profile.streakAtual} dias`,
-            color: "text-error",
-          },
-          {
-            icon: BookOpen,
-            label: "Lições",
-            value: String(profile.lessonsCompleted),
-            color: "text-secondary",
-          },
-          {
-            icon: Trophy,
-            label: "XP Semanal",
-            value: formatNumber(profile.xpWeekly),
-            color: "text-tertiary",
-          },
-        ].map(({ icon: Icon, label, value, color }) => (
-          <div
-            key={label}
-            className="card-elevation rounded-3xl p-4 border-2 border-surface-container-highest text-center"
-          >
-            <Icon className={cn("h-6 w-6 mx-auto mb-2", color)} />
-            <p className="text-xl font-extrabold text-on-background font-display">{value}</p>
-            <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wide mt-1">
-              {label}
+          {isOwnProfile && (
+            <Link
+              href="/configuracoes"
+              className="inline-flex items-center gap-2 bg-surface-container-high text-on-surface px-5 py-2 rounded-full border-2 border-surface-variant font-bold text-sm bouncy-transition hover:bg-surface-container"
+            >
+              <Settings className="h-4 w-4 text-secondary" />
+              Editar perfil
+            </Link>
+          )}
+
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <div className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-bold border-b-2 border-secondary">
+              <Verified className="h-4 w-4 shrink-0" />
+              Nível {profile.level} · {levelTitle}
+            </div>
+
+            {profile.weeklyRank !== null && (
+              <p className="text-sm font-bold text-on-surface-variant">
+                #{profile.weeklyRank} no ranking semanal · {leagueLabel}
+              </p>
+            )}
+          </div>
+
+          <div className="w-full max-w-md mx-auto md:mx-0 space-y-2 pt-1">
+            <div className="bg-surface-container-high h-5 sm:h-6 rounded-full overflow-hidden border-2 border-surface-variant">
+              <div
+                className="bg-primary-container h-full rounded-full progress-glow transition-all duration-500"
+                style={{ width: `${xpProgress}%` }}
+              />
+            </div>
+            <p className="text-sm font-bold text-on-surface-variant">
+              {formatNumber(xpInLevel)} / 1.000 XP para o Nível {profile.level + 1}
             </p>
           </div>
-        ))}
-      </div>
-
-      {isOwnProfile ? (
-        <div className="space-y-3 mb-6">
-          <Link
-            href="/trilhas"
-            className="flex items-center justify-between p-4 card-elevation rounded-3xl border-2 border-surface-container-highest hover:border-primary-container hover:bg-primary-container/5 bouncy-transition"
-          >
-            <div className="flex items-center gap-3">
-              <Map className="h-5 w-5 text-primary" />
-              <span className="font-bold text-on-background">Continuar aprendendo</span>
-            </div>
-            <ChevronRight className="h-5 w-5 text-outline" />
-          </Link>
-
-          <Link
-            href="/ranking"
-            className="flex items-center justify-between p-4 card-elevation rounded-3xl border-2 border-surface-container-highest hover:border-primary-container hover:bg-primary-container/5 bouncy-transition"
-          >
-            <div className="flex items-center gap-3">
-              <Trophy className="h-5 w-5 text-tertiary" />
-              <span className="font-bold text-on-background">Ver ranking semanal</span>
-            </div>
-            <ChevronRight className="h-5 w-5 text-outline" />
-          </Link>
-
-          <Link
-            href="/configuracoes"
-            className="flex items-center justify-between p-4 card-elevation rounded-3xl border-2 border-surface-container-highest hover:border-primary-container hover:bg-primary-container/5 bouncy-transition"
-          >
-            <div className="flex items-center gap-3">
-              <Settings className="h-5 w-5 text-secondary" />
-              <span className="font-bold text-on-background">Configurações da conta</span>
-            </div>
-            <ChevronRight className="h-5 w-5 text-outline" />
-          </Link>
         </div>
-      ) : (
-        <div className="mb-6 space-y-4">
+      </section>
+
+      {!isOwnProfile && (
+        <div className="mb-8 max-w-md mx-auto md:mx-0">
           <FriendActionButtonProfile
             targetUserId={profile.id}
             friendshipStatus={friendshipStatus}
             friendshipId={friendshipId}
           />
-          <div className="p-5 rounded-3xl border-2 border-surface-container-highest bg-surface-container-low text-center">
-            <p className="text-sm text-on-surface-variant">
-              Este é o perfil público de{" "}
-              <strong className="text-on-background">{profile.name}</strong>. Adicione como amigo
-              para ver as atividades no feed da comunidade!
-            </p>
-          </div>
         </div>
       )}
 
-      {isOwnProfile && (
-        <div className="flex gap-4 items-center bg-tertiary-container/20 p-5 rounded-3xl border-2 border-dashed border-tertiary-fixed">
-          <div className="relative w-16 h-16 shrink-0">
-            <Image src={MASCOT.default} alt="Mascote" fill className="object-contain" />
+      {/* Stats */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+        {[
+          {
+            icon: Star,
+            label: "XP total",
+            value: formatNumber(profile.xpTotal),
+            iconWrap: "bg-primary-container/20",
+            iconColor: "text-primary fill-primary",
+          },
+          {
+            icon: Flame,
+            label: "Ofensiva atual",
+            value: `${profile.streakAtual} ${profile.streakAtual === 1 ? "dia" : "dias"}`,
+            iconWrap: "bg-orange-100 dark:bg-orange-950/40",
+            iconColor: "text-orange-500 fill-orange-500",
+          },
+          {
+            icon: BookOpen,
+            label: "Lições concluídas",
+            value: String(profile.lessonsCompleted),
+            iconWrap: "bg-secondary-container/30",
+            iconColor: "text-secondary",
+          },
+        ].map(({ icon: Icon, label, value, iconWrap, iconColor }) => (
+          <div
+            key={label}
+            className="bg-white dark:bg-surface-container-low p-4 md:p-5 rounded-3xl border-2 border-surface-variant block-shadow-card flex items-center gap-4 bouncy-transition hover:border-primary-container/40"
+          >
+            <div
+              className={cn(
+                "grid w-14 h-14 md:w-16 md:h-16 shrink-0 place-items-center rounded-full",
+                iconWrap
+              )}
+            >
+              <Icon className={cn("h-7 w-7 md:h-8 md:w-8 shrink-0", iconColor)} />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-secondary">{label}</p>
+              <p className="text-2xl font-black text-on-background font-display">{value}</p>
+            </div>
           </div>
-          <div>
-            <p className="font-bold text-tertiary mb-1">Dica do Robô</p>
-            <p className="text-sm text-on-surface-variant">
-              Pratique todos os dias para manter sua ofensiva e subir no ranking!
-            </p>
-          </div>
+        ))}
+      </section>
+
+      {/* Emblemas + progresso semanal */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-7">
+          <ProfileBadges
+            lessonsCompleted={profile.lessonsCompleted}
+            streakAtual={profile.streakAtual}
+            level={profile.level}
+            gems={profile.gems}
+            league={profile.league}
+          />
         </div>
-      )}
+        <div className="xl:col-span-5 min-w-0">
+          <ProfileWeeklyProgress days={profile.weeklyXpDays} />
+        </div>
+      </div>
     </div>
   );
 }

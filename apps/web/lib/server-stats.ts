@@ -14,7 +14,7 @@ export function xpToNextLevel(xpTotal: number): number {
   return calculateLevel(xpTotal) * 1000 - xpTotal;
 }
 
-async function getWeeklyXpData(userId: string) {
+export async function getWeeklyXpDays(userId: string) {
   const now = new Date();
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
@@ -138,7 +138,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats 
         select: { xpTotal: true, streakAtual: true },
       }),
       prisma.userProgress.count({ where: { userId, completed: true } }),
-      getWeeklyXpData(userId),
+      getWeeklyXpDays(userId),
       getContributionGraphData(userId),
       prisma.lesson.findMany({
         orderBy: [

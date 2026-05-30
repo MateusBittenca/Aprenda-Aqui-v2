@@ -5,7 +5,7 @@ import {
   getWeekStart,
   type LeaderboardRow,
 } from "@/lib/leaderboard";
-import { calculateLevel, xpToNextLevel } from "@/lib/server-stats";
+import { calculateLevel, getWeeklyXpDays, xpToNextLevel } from "@/lib/server-stats";
 
 export interface PublicUserProfile {
   id: string;
@@ -21,6 +21,7 @@ export interface PublicUserProfile {
   xpWeekly: number;
   weeklyRank: number | null;
   league: LeagueTier;
+  weeklyXpDays: { label: string; xp: number }[];
 }
 
 export async function getPublicUserProfile(
@@ -28,7 +29,7 @@ export async function getPublicUserProfile(
 ): Promise<PublicUserProfile | null> {
   const weekStart = getWeekStart();
 
-  const [user, lessonsCompleted, xpWeekly, leagueEntry, leaderboard] =
+  const [user, lessonsCompleted, xpWeekly, weeklyXpDays, leagueEntry, leaderboard] =
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
@@ -44,6 +45,7 @@ export async function getPublicUserProfile(
       }),
       prisma.userProgress.count({ where: { userId, completed: true } }),
       getUserWeeklyXp(userId, weekStart),
+      getWeeklyXpDays(userId),
       prisma.leaderboardEntry.findUnique({
         where: { userId_weekStart: { userId, weekStart } },
         select: { league: true },
@@ -70,5 +72,6 @@ export async function getPublicUserProfile(
     xpWeekly,
     weeklyRank,
     league: leagueEntry?.league ?? LeagueTier.BRONZE,
+    weeklyXpDays,
   };
 }
