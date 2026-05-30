@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
@@ -56,7 +58,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="w-full max-w-md mx-auto mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar para o início
+        </Link>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center w-full">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-primary mb-2">
@@ -149,6 +162,7 @@ export default function LoginPage() {
             Demo: demo@aprendaqui.com.br / demo123
           </p>
         )}
+      </div>
       </div>
     </div>
   );

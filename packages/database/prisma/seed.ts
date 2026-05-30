@@ -621,8 +621,9 @@ async function main() {
               content: {
                 instructions: "Use .map() para dobrar cada número do array",
                 starterCode: "const nums = [1, 2, 3];\nconst doubled = nums.map(/* ... */);",
+                hint: "Dentro do .map(), use uma arrow function que retorne o número vezes 2 (ex.: n => n * 2)",
               },
-              solution: { contains: "n * 2" },
+              solution: { contains: "* 2" },
             },
           ],
         },
