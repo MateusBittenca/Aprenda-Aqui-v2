@@ -69,8 +69,13 @@ export function Sidebar() {
           <span>Configurações</span>
         </Link>
         <Link
-          href="#"
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl text-secondary hover:bg-surface-variant/50 transition-colors text-sm font-bold"
+          href="/ajuda"
+          className={cn(
+            "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-100 text-sm font-bold",
+            pathname === "/ajuda" || pathname.startsWith("/ajuda/")
+              ? "bg-primary-container text-on-primary-container border-b-4 border-primary scale-[0.98]"
+              : "text-secondary hover:bg-surface-variant/50"
+          )}
         >
           <HelpCircle className="h-5 w-5" />
           <span>Ajuda</span>
