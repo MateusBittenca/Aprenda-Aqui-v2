@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { notifyFriendsOfLessonActivity } from "@/lib/notifications";
 import { validateCodeAnswer, validateQuizAnswer } from "@/lib/lesson-validation";
 import { prisma, ActivityType } from "database";
+import { processLevelUps } from "@/lib/level-rewards";
 
 interface QuizContent {
   questions?: Array<{ question: string; options: string[]; correctIndex: number }>;
@@ -76,11 +77,12 @@ export async function POST(
     return NextResponse.json({ correct: false }, { status: 422 });
   }
 
-  // Buscar streak atual antes da transação
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { streakAtual: true, ultimaAtividade: true },
+    select: { streakAtual: true, ultimaAtividade: true, xpTotal: true },
   });
+
+  const xpBefore = currentUser?.xpTotal ?? 0;
 
   const newStreak = calcStreak(
     currentUser?.streakAtual ?? 0,
@@ -115,6 +117,8 @@ export async function POST(
     }),
   ]);
 
+  const { levelUp } = await processLevelUps(userId, xpBefore, xpBefore + lesson.xpReward);
+
   await notifyFriendsOfLessonActivity({
     userId,
     actorName: session.user.name ?? "Um amigo",
@@ -136,5 +140,6 @@ export async function POST(
     xpEarned: lesson.xpReward,
     gemsEarned: lesson.gemsReward,
     trackSlug: lesson.track.slug,
+    levelUp,
   });
 }

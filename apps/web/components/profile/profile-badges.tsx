@@ -7,7 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LeagueTier } from "database";
+import { LeagueTier } from "@/lib/league-tier";
 
 interface ProfileBadgesProps {
   lessonsCompleted: number;

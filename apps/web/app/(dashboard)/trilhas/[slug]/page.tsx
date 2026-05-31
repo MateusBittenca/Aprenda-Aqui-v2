@@ -5,17 +5,24 @@ import { prisma } from "database";
 import { authOptions } from "@/lib/auth";
 import { getUserProfile } from "@/lib/server-stats";
 import { getWeeklyLeaderboard } from "@/lib/leaderboard";
-import { buildLessonPath, countLessonsToRanking } from "@/lib/track-path";
+import { buildTrackPath, countLessonsToRanking } from "@/lib/track-path";
 import { LearningPath } from "@/components/tracks/learning-path";
 import { TrackProgressSidebar } from "@/components/tracks/track-progress-sidebar";
-import { Trophy } from "lucide-react";
+import { Sparkles, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrackIconBadge } from "@/lib/track-icons";
 import { getTrackTheme } from "@/lib/track-theme";
 
 interface TrackPageProps {
   params: { slug: string };
-  searchParams: { completed?: string; xp?: string; gems?: string };
+  searchParams: {
+    completed?: string;
+    xp?: string;
+    gems?: string;
+    chest?: string;
+    chestXp?: string;
+    chestGems?: string;
+  };
 }
 
 export const dynamic = "force-dynamic";
@@ -45,6 +52,7 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
           lessons: { orderBy: { order: "asc" } },
         },
       },
+      chests: { orderBy: { order: "asc" } },
     },
   });
 
@@ -53,19 +61,36 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
   const theme = getTrackTheme(track);
 
   const completedIds = new Set<string>();
+  const claimedChestIds = new Set<string>();
   if (userId) {
-    const progress = await prisma.userProgress.findMany({
-      where: { userId, completed: true },
-      select: { lessonId: true },
-    });
+    const [progress, chestClaims] = await Promise.all([
+      prisma.userProgress.findMany({
+        where: { userId, completed: true },
+        select: { lessonId: true },
+      }),
+      prisma.userChestClaim.findMany({
+        where: { userId, chest: { trackId: track.id } },
+        select: { chestId: true },
+      }),
+    ]);
     progress.forEach((p: { lessonId: string }) => completedIds.add(p.lessonId));
+    chestClaims.forEach((c: { chestId: string }) => claimedChestIds.add(c.chestId));
   }
 
   const justCompleted = searchParams.completed;
   const xpEarned = searchParams.xp ? Number(searchParams.xp) : 0;
   const gemsEarned = searchParams.gems ? Number(searchParams.gems) : 0;
+  const chestOpened = searchParams.chest;
+  const chestXp = searchParams.chestXp ? Number(searchParams.chestXp) : 0;
+  const chestGems = searchParams.chestGems ? Number(searchParams.chestGems) : 0;
 
-  const pathNodes = buildLessonPath(track.units, completedIds, justCompleted);
+  const pathNodes = buildTrackPath(
+    track.units,
+    completedIds,
+    claimedChestIds,
+    track.chests,
+    justCompleted
+  );
 
   const [profile, leaderboard, dailyXp] = userId
     ? await Promise.all([
@@ -83,6 +108,27 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
       className={cn("max-w-container-max mx-auto", theme.className)}
       style={theme.cssVars}
     >
+      {chestOpened && (
+        <div className="track-banner mb-6 p-4 border-2 rounded-3xl flex items-center gap-4">
+          <Sparkles className="track-text h-8 w-8 shrink-0" />
+          <div>
+            <p className="font-extrabold text-on-background">Baú resgatado!</p>
+            {(chestXp > 0 || chestGems > 0) && (
+              <p className="text-sm text-on-surface-variant">
+                Você ganhou{" "}
+                {chestXp > 0 && (
+                  <span className="track-banner-text font-bold">+{chestXp} XP</span>
+                )}
+                {chestXp > 0 && chestGems > 0 && " e "}
+                {chestGems > 0 && (
+                  <span className="text-secondary font-bold">+{chestGems} gemas</span>
+                )}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {justCompleted && (
         <div className="track-banner mb-6 p-4 border-2 rounded-3xl flex items-center gap-4">
           <Trophy className="track-text h-8 w-8 shrink-0" />

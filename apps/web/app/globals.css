@@ -155,6 +155,22 @@
     transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
+  @keyframes level-confetti-fall {
+    0% {
+      transform: translateY(-10vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  .level-confetti-piece {
+    top: -8px;
+    animation: level-confetti-fall 2.8s ease-in forwards;
+  }
+
   /* Cores da trilha — variáveis definidas via style (banco de dados) */
   .track-themed .track-icon-badge {
     background-color: rgb(var(--track-primary));
@@ -220,6 +236,30 @@
   .track-themed .track-node-current-label {
     background-color: rgb(var(--track-dark));
     color: rgb(var(--track-on-primary));
+  }
+
+  .track-themed .track-chest-available {
+    background: linear-gradient(
+      145deg,
+      rgb(var(--track-light)) 0%,
+      rgb(var(--track-primary)) 55%,
+      rgb(var(--track-muted)) 100%
+    );
+    border-bottom: 6px solid rgb(var(--track-dark));
+    color: rgb(var(--track-on-primary));
+    box-shadow: 0 12px 24px rgb(var(--track-primary) / 0.35);
+  }
+
+  .track-themed .track-chest-claimed {
+    background-color: rgb(var(--track-muted) / 0.2);
+    border-color: rgb(var(--track-muted));
+    color: rgb(var(--track-muted));
+  }
+
+  .track-themed .track-chest-label {
+    background-color: rgb(var(--track-primary));
+    color: rgb(var(--track-on-primary));
+    border: 2px solid rgb(var(--track-dark));
   }
 
   .track-themed .track-node-ring {

@@ -1,4 +1,5 @@
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import type { LevelUpPayload } from "@/lib/level-rewards";
 
 interface CompleteLessonResult {
   ok: boolean;
@@ -6,6 +7,8 @@ interface CompleteLessonResult {
   incorrect?: boolean;
   xpEarned?: number;
   gemsEarned?: number;
+  trackSlug?: string;
+  levelUp?: LevelUpPayload | null;
 }
 
 export async function submitLessonCompletion(
@@ -26,6 +29,8 @@ export async function submitLessonCompletion(
     incorrect: res.status === 422 || data.correct === false,
     xpEarned: data.xpEarned,
     gemsEarned: data.gemsEarned,
+    trackSlug: data.trackSlug,
+    levelUp: data.levelUp ?? null,
   };
 }
 
@@ -42,4 +47,8 @@ export function navigateAfterLessonComplete(
   });
   router.push(`/trilhas/${trackSlug}?${params.toString()}`);
   router.refresh();
+}
+
+export async function acknowledgeLevelCelebration() {
+  await fetch("/api/users/me/celebrate-level", { method: "POST" });
 }

@@ -1,6 +1,7 @@
 import { PrismaClient, LessonType, ActivityType, NotificationType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { gemsForXp } from "../src/gems";
+import { syncLevelRewardsForUser } from "../src/sync-level-rewards";
 
 const prisma = new PrismaClient();
 
@@ -16,6 +17,9 @@ function getWeekStart(date = new Date()): Date {
 async function main() {
   await prisma.notification.deleteMany();
   await prisma.activityEvent.deleteMany();
+  await prisma.userChestClaim.deleteMany();
+  await prisma.userTitleUnlock.deleteMany();
+  await prisma.trackChest.deleteMany();
   await prisma.friendship.deleteMany();
   await prisma.userProgress.deleteMany();
   await prisma.leaderboardEntry.deleteMany();
@@ -644,6 +648,8 @@ async function main() {
         data: { ...unitFields, trackId: track.id },
       });
 
+      let lastLessonInUnit: { id: string } | null = null;
+
       for (const lessonData of lessons) {
         const { xpReward, ...rest } = lessonData;
         const lesson = await prisma.lesson.create({
@@ -655,10 +661,26 @@ async function main() {
             unitId: unit.id,
           },
         });
+        lastLessonInUnit = lesson;
         allLessons.push({
           id: lesson.id,
           xpReward: lesson.xpReward,
           gemsReward: lesson.gemsReward,
+        });
+      }
+
+      if (lastLessonInUnit) {
+        const unitXpBonus = 20 + unitFields.order * 10;
+        const unitGemsBonus = 10 + unitFields.order * 5;
+        await prisma.trackChest.create({
+          data: {
+            trackId: track.id,
+            afterLessonId: lastLessonInUnit.id,
+            title: `Baú: ${unitFields.title}`,
+            xpReward: unitXpBonus,
+            gemsReward: unitGemsBonus,
+            order: unitFields.order,
+          },
         });
       }
     }
@@ -688,9 +710,16 @@ async function main() {
     });
   }
 
+  const demoLevelSync = await syncLevelRewardsForUser(prisma, demoUser.id, demoXpTotal);
+
   await prisma.user.update({
     where: { id: demoUser.id },
-    data: { xpTotal: demoXpTotal, gems: demoGemsTotal },
+    data: {
+      xpTotal: demoXpTotal,
+      gems: demoGemsTotal + demoLevelSync.totalGemsFromLevels,
+      activeTitleKey: demoLevelSync.activeTitleKey,
+      lastCelebratedLevel: demoLevelSync.level,
+    },
   });
 
   const now = new Date();
@@ -763,6 +792,20 @@ async function main() {
     await prisma.user.update({
       where: { id: user.id },
       data: { xpTotal: xp },
+    });
+
+    const sync = await syncLevelRewardsForUser(prisma, user.id, xp);
+    const current = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { gems: true },
+    });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        gems: (current?.gems ?? 0) + sync.totalGemsFromLevels,
+        activeTitleKey: sync.activeTitleKey,
+        lastCelebratedLevel: sync.level,
+      },
     });
   }
 

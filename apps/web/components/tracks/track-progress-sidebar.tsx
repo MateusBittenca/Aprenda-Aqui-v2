@@ -4,7 +4,7 @@ import { Award, Flame } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { LEAGUE_LABELS } from "@/lib/leaderboard";
 import { MASCOT, MASCOT_TIPS } from "@/lib/mascot";
-import type { LeagueTier } from "database";
+import type { LeagueTier } from "@/lib/league-tier";
 
 interface TrackProgressSidebarProps {
   streak: number;
@@ -29,7 +29,7 @@ export function TrackProgressSidebar({
   const leagueLabel = LEAGUE_LABELS[userLeague];
   const tip =
     lessonsToRanking > 0
-      ? `Complete mais ${lessonsToRanking} ${lessonsToRanking === 1 ? "lição" : "lições"} para subir no ranking e ganhar um baú de XP!`
+      ? `Complete mais ${lessonsToRanking} ${lessonsToRanking === 1 ? "lição" : "lições"} para subir no ranking!`
       : MASCOT_TIPS[0];
 
   return (

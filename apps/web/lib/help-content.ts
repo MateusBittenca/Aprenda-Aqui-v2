@@ -77,7 +77,7 @@ export const HELP_FAQS: HelpFaqItem[] = [
     category: "gamificacao",
     question: "Como subo de nível?",
     answer:
-      "Cada lição concede XP ao ser concluída corretamente. Acumule XP para subir de nível — a cada 1.000 XP você avança um nível. Acompanhe o progresso no perfil e no dashboard.",
+      "Cada lição e baú de trilha concedem XP. A cada 1.000 XP você sobe um nível e ganha gemas + um novo título de usuário automaticamente. Clique no badge de nível no seu perfil para ver a trilha completa, recompensas futuras e títulos desbloqueados.",
   },
   {
     id: "senha",

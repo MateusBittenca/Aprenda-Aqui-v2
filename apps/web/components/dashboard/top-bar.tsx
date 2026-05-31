@@ -9,6 +9,8 @@ interface TopBarProps {
   xpTotal?: number;
   gems?: number;
   streak?: number;
+  level?: number;
+  titleLabel?: string;
   unreadNotifications?: number;
 }
 
@@ -16,6 +18,8 @@ export function TopBar({
   xpTotal = 0,
   gems = 0,
   streak = 0,
+  level = 1,
+  titleLabel = "Iniciante",
   unreadNotifications = 0,
 }: TopBarProps) {
   const { data: session } = useSession();
@@ -29,6 +33,9 @@ export function TopBar({
       <div className="hidden lg:block">
         <p className="text-sm text-on-surface-variant font-medium">
           Continue sua jornada de aprendizado
+        </p>
+        <p className="text-xs font-bold text-secondary">
+          Nível {level} · {titleLabel}
         </p>
       </div>
 

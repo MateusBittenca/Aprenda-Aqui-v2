@@ -3,14 +3,14 @@ import { BookOpen } from "lucide-react";
 import type { ActivityFeedItem } from "@/lib/community";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 import { UserAvatar } from "@/components/community/user-avatar";
-import { ActivityType } from "database";
+const ACTIVITY_LESSON_COMPLETED = "LESSON_COMPLETED" as const;
 
 interface ActivityFeedProps {
   items: ActivityFeedItem[];
 }
 
 function ActivityMessage({ item }: { item: ActivityFeedItem }) {
-  if (item.type === ActivityType.LESSON_COMPLETED) {
+  if (item.type === ACTIVITY_LESSON_COMPLETED) {
     const title = item.metadata.lessonTitle ?? "uma lição";
     const track = item.metadata.trackTitle;
     return (

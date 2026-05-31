@@ -6,6 +6,7 @@ import {
   type LeaderboardRow,
 } from "@/lib/leaderboard";
 import { calculateLevel, getWeeklyXpDays, xpToNextLevel } from "@/lib/server-stats";
+import { getTitleLabel } from "@/lib/level-system";
 
 export interface PublicUserProfile {
   id: string;
@@ -17,6 +18,9 @@ export interface PublicUserProfile {
   createdAt: Date;
   level: number;
   xpToNextLevel: number;
+  activeTitleKey: string;
+  titleLabel: string;
+  unlockedTitles: { titleKey: string; unlockedAt: string }[];
   lessonsCompleted: number;
   xpWeekly: number;
   weeklyRank: number | null;
@@ -29,7 +33,7 @@ export async function getPublicUserProfile(
 ): Promise<PublicUserProfile | null> {
   const weekStart = getWeekStart();
 
-  const [user, lessonsCompleted, xpWeekly, weeklyXpDays, leagueEntry, leaderboard] =
+  const [user, lessonsCompleted, xpWeekly, weeklyXpDays, leagueEntry, leaderboard, titleUnlocks] =
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
@@ -41,6 +45,7 @@ export async function getPublicUserProfile(
           gems: true,
           streakAtual: true,
           createdAt: true,
+          activeTitleKey: true,
         },
       }),
       prisma.userProgress.count({ where: { userId, completed: true } }),
@@ -51,6 +56,11 @@ export async function getPublicUserProfile(
         select: { league: true },
       }),
       getWeeklyLeaderboard(userId),
+      prisma.userTitleUnlock.findMany({
+        where: { userId },
+        select: { titleKey: true, unlockedAt: true },
+        orderBy: { unlockedAt: "asc" },
+      }),
     ]);
 
   if (!user) return null;
@@ -68,6 +78,12 @@ export async function getPublicUserProfile(
     createdAt: user.createdAt,
     level: calculateLevel(user.xpTotal),
     xpToNextLevel: xpToNextLevel(user.xpTotal),
+    activeTitleKey: user.activeTitleKey,
+    titleLabel: getTitleLabel(user.activeTitleKey),
+    unlockedTitles: titleUnlocks.map((t: { titleKey: string; unlockedAt: Date }) => ({
+      titleKey: t.titleKey,
+      unlockedAt: t.unlockedAt.toISOString(),
+    })),
     lessonsCompleted,
     xpWeekly,
     weeklyRank,

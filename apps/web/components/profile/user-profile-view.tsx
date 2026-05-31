@@ -7,6 +7,7 @@ import { ProfileBadges } from "@/components/profile/profile-badges";
 import { ProfileWeeklyProgress } from "@/components/profile/profile-weekly-progress";
 import type { FriendshipView } from "@/lib/community";
 import type { PublicUserProfile } from "@/lib/public-profile";
+import { LevelBadgeButton } from "@/components/levels/level-badge-button";
 import {
   ArrowLeft,
   BookOpen,
@@ -14,7 +15,6 @@ import {
   Pencil,
   Settings,
   Star,
-  Verified,
 } from "lucide-react";
 
 interface UserProfileViewProps {
@@ -23,14 +23,6 @@ interface UserProfileViewProps {
   email?: string;
   friendshipStatus?: FriendshipView;
   friendshipId?: string | null;
-}
-
-function getLevelTitle(level: number): string {
-  if (level >= 20) return "Lenda do código";
-  if (level >= 15) return "Mestre";
-  if (level >= 10) return "Especialista";
-  if (level >= 5) return "Explorador";
-  return "Iniciante";
 }
 
 export function UserProfileView({
@@ -42,7 +34,6 @@ export function UserProfileView({
 }: UserProfileViewProps) {
   const xpInLevel = 1000 - profile.xpToNextLevel;
   const xpProgress = Math.min((xpInLevel / 1000) * 100, 100);
-  const levelTitle = getLevelTitle(profile.level);
   const leagueLabel = LEAGUE_LABELS[profile.league];
 
   return (
@@ -113,10 +104,13 @@ export function UserProfileView({
           )}
 
           <div className="flex flex-col items-center md:items-start gap-2">
-            <div className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-bold border-b-2 border-secondary">
-              <Verified className="h-4 w-4 shrink-0" />
-              Nível {profile.level} · {levelTitle}
-            </div>
+            <LevelBadgeButton
+              level={profile.level}
+              activeTitleKey={profile.activeTitleKey}
+              xpTotal={profile.xpTotal}
+              unlockedTitles={profile.unlockedTitles}
+              interactive={isOwnProfile}
+            />
 
             {profile.weeklyRank !== null && (
               <p className="text-sm font-bold text-on-surface-variant">

@@ -43,12 +43,14 @@ model User {
   emailVerified   DateTime? @map("email_verified")
   image           String?
   passwordHash    String?   @map("password_hash")
-  xpTotal         Int       @default(0) @map("xp_total")
-  gems            Int       @default(0)
-  streakAtual     Int       @default(0) @map("streak_atual")
-  ultimaAtividade DateTime? @map("ultima_atividade")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  xpTotal              Int       @default(0) @map("xp_total")
+  gems                 Int       @default(0)
+  streakAtual          Int       @default(0) @map("streak_atual")
+  ultimaAtividade      DateTime? @map("ultima_atividade")
+  activeTitleKey       String    @default("iniciante") @map("active_title_key")
+  lastCelebratedLevel  Int       @default(1) @map("last_celebrated_level")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
 
   accounts            Account[]
   sessions            Session[]
@@ -59,8 +61,22 @@ model User {
   activities          ActivityEvent[]
   notifications       Notification[] @relation("NotificationRecipient")
   notificationsSent   Notification[] @relation("NotificationActor")
+  chestClaims         UserChestClaim[]
+  titleUnlocks        UserTitleUnlock[]
 
   @@map("users")
+}
+
+model UserTitleUnlock {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  titleKey   String   @map("title_key")
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleKey])
+  @@map("user_title_unlocks")
 }
 
 model Account {
@@ -120,6 +136,7 @@ model Track {
 
   units   Unit[]
   lessons Lesson[]
+  chests  TrackChest[]
 
   @@map("tracks")
 }
@@ -152,11 +169,45 @@ model Lesson {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
 
-  track    Track          @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  unit     Unit?          @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  progress UserProgress[]
+  track         Track          @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  unit          Unit?          @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  progress      UserProgress[]
+  chestsAfter   TrackChest[]   @relation("ChestAfterLesson")
 
   @@map("lessons")
+}
+
+model TrackChest {
+  id            String   @id @default(cuid())
+  trackId       String   @map("track_id")
+  afterLessonId String   @map("after_lesson_id")
+  title         String   @default("Baú de recompensas")
+  xpReward      Int      @default(25) @map("xp_reward")
+  gemsReward    Int      @default(10) @map("gems_reward")
+  order         Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  track       Track            @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  afterLesson Lesson           @relation("ChestAfterLesson", fields: [afterLessonId], references: [id], onDelete: Cascade)
+  claims      UserChestClaim[]
+
+  @@unique([trackId, afterLessonId])
+  @@map("track_chests")
+}
+
+model UserChestClaim {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  chestId    String   @map("chest_id")
+  xpEarned   Int      @map("xp_earned")
+  gemsEarned Int      @map("gems_earned")
+  claimedAt  DateTime @default(now()) @map("claimed_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chest TrackChest @relation(fields: [chestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chestId])
+  @@map("user_chest_claims")
 }
 
 model UserProgress {

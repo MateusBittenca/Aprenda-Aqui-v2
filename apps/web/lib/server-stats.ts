@@ -6,13 +6,9 @@ import {
   type ContributionGraphData,
 } from "@/lib/contribution-graph";
 
-export function calculateLevel(xpTotal: number): number {
-  return Math.floor(xpTotal / 1000) + 1;
-}
+import { calculateLevel, xpToNextLevel } from "@/lib/level-system";
 
-export function xpToNextLevel(xpTotal: number): number {
-  return calculateLevel(xpTotal) * 1000 - xpTotal;
-}
+export { calculateLevel, xpToNextLevel };
 
 export async function getWeeklyXpDays(userId: string) {
   const now = new Date();

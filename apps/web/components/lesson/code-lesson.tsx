@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { Play, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+  acknowledgeLevelCelebration,
   navigateAfterLessonComplete,
   submitLessonCompletion,
 } from "@/lib/lesson-completion";
+import type { LevelUpPayload } from "@/lib/level-rewards";
+import { LevelUpCelebration } from "@/components/levels/level-up-celebration";
 import { validateCodeAnswer } from "@/lib/lesson-validation";
 import { useLessonLives } from "@/hooks/use-lesson-lives";
 import { LessonHeader } from "./lesson-header";
@@ -72,6 +75,10 @@ export function CodeLesson({
   const [footerState, setFooterState] = useState<"idle" | "correct" | "incorrect">("idle");
   const [completing, setCompleting] = useState(false);
   const [completeError, setCompleteError] = useState(false);
+  const [levelUp, setLevelUp] = useState<LevelUpPayload | null>(null);
+  const [pendingRewards, setPendingRewards] = useState<{ xp: number; gems: number } | null>(
+    null
+  );
 
   const {
     lives,
@@ -113,6 +120,15 @@ export function CodeLesson({
 
       const xp = result.xpEarned ?? xpReward;
       const gemsEarned = result.gemsEarned ?? gemsReward;
+
+      if (result.levelUp) {
+        setPendingRewards({ xp, gems: gemsEarned });
+        setLevelUp(result.levelUp);
+        setCompleting(false);
+        setFooterState("correct");
+        return;
+      }
+
       navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems: gemsEarned });
     } catch (err) {
       console.error("[code] erro de rede", err);
@@ -277,6 +293,19 @@ export function CodeLesson({
         canAffordRefill={canAffordRefill}
         onRefill={handleRefill}
       />
+
+      {levelUp && pendingRewards && (
+        <LevelUpCelebration
+          open
+          levelUp={levelUp}
+          onContinue={async () => {
+            await acknowledgeLevelCelebration();
+            navigateAfterLessonComplete(router, trackSlug, lessonId, pendingRewards);
+            setLevelUp(null);
+            setPendingRewards(null);
+          }}
+        />
+      )}
     </div>
   );
 }
