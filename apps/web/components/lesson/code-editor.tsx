@@ -4,6 +4,11 @@ import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import type { editor } from "monaco-editor";
 import type { Monaco } from "@monaco-editor/react";
+import {
+  DEFAULT_EDITOR_THEME_KEY,
+  getMonacoThemeName,
+  listEditorThemes,
+} from "@/lib/editor-themes";
 
 export type CodeEditorMode = "HTML" | "CSS" | "JS";
 
@@ -22,34 +27,10 @@ function modeToLanguage(mode: CodeEditorMode): string {
   return "html";
 }
 
-function defineTheme(monaco: Monaco) {
-  monaco.editor.defineTheme("aprenda-aqui", {
-    base: "vs-dark",
-    inherit: true,
-    rules: [
-      { token: "tag", foreground: "ffdf92" },
-      { token: "attribute.name", foreground: "c0c2f7" },
-      { token: "attribute.value", foreground: "87fe45" },
-      { token: "string", foreground: "87fe45" },
-      { token: "keyword", foreground: "c0c2f7" },
-      { token: "comment", foreground: "9ca3af", fontStyle: "italic" },
-    ],
-    colors: {
-      "editor.background": "#575a89",
-      "editor.foreground": "#ffffff",
-      "editor.lineHighlightBackground": "#4a4d7a",
-      "editor.selectionBackground": "#58cc0244",
-      "editor.inactiveSelectionBackground": "#58cc0222",
-      "editorCursor.foreground": "#6be026",
-      "editorLineNumber.foreground": "#ffffff55",
-      "editorLineNumber.activeForeground": "#ffffff",
-      "editorSuggestWidget.background": "#1c1f4a",
-      "editorSuggestWidget.border": "#58cc02",
-      "editorSuggestWidget.selectedBackground": "#58cc0233",
-      "editorWidget.background": "#1c1f4a",
-      "editorWidget.border": "#c6c8fd",
-    },
-  });
+function defineThemes(monaco: Monaco) {
+  for (const theme of listEditorThemes()) {
+    monaco.editor.defineTheme(getMonacoThemeName(theme.key), theme.data);
+  }
 }
 
 const EDITOR_OPTIONS: editor.IStandaloneEditorConstructionOptions = {
@@ -109,13 +90,25 @@ interface CodeEditorProps {
   onChange: (value: string) => void;
   mode: CodeEditorMode;
   className?: string;
+  themeKey?: string;
 }
 
-export function CodeEditor({ value, onChange, mode, className }: CodeEditorProps) {
+export function CodeEditor({
+  value,
+  onChange,
+  mode,
+  className,
+  themeKey = DEFAULT_EDITOR_THEME_KEY,
+}: CodeEditorProps) {
   const language = useMemo(() => modeToLanguage(mode), [mode]);
+  const activeTheme = useMemo(() => getMonacoThemeName(themeKey), [themeKey]);
 
   function handleBeforeMount(monaco: Monaco) {
-    defineTheme(monaco);
+    defineThemes(monaco);
+  }
+
+  function handleMount(_editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
+    monaco.editor.setTheme(activeTheme);
   }
 
   return (
@@ -124,9 +117,10 @@ export function CodeEditor({ value, onChange, mode, className }: CodeEditorProps
         height="100%"
         language={language}
         value={value}
-        theme="aprenda-aqui"
+        theme={activeTheme}
         options={EDITOR_OPTIONS}
         beforeMount={handleBeforeMount}
+        onMount={handleMount}
         onChange={(next) => onChange(next ?? "")}
       />
     </div>

@@ -4,6 +4,7 @@ import { prisma } from "database";
 import { QuizLesson } from "@/components/lesson/quiz-lesson";
 import { CodeLesson } from "@/components/lesson/code-lesson";
 import { authOptions } from "@/lib/auth";
+import { normalizeEditorThemeKey } from "@/lib/editor-themes";
 
 interface LessonPageProps {
   params: { lessonId: string };
@@ -46,12 +47,16 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   const session = await getServerSession(authOptions);
   let initialGems = 0;
+  let editorThemeKey: string | undefined;
   if (session?.user?.id) {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { gems: true },
+      select: { gems: true, activeEditorThemeKey: true },
     });
     initialGems = user?.gems ?? 0;
+    editorThemeKey = user?.activeEditorThemeKey
+      ? normalizeEditorThemeKey(user.activeEditorThemeKey)
+      : undefined;
   }
 
   const content = lesson.content as LessonContent;
@@ -89,6 +94,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       initialGems={initialGems}
       validationContains={solution?.contains ?? null}
       mode={mode}
+      editorThemeKey={editorThemeKey}
     />
   );
 }

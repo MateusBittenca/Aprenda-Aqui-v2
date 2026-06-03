@@ -30,3 +30,16 @@ export {
 } from "./daily-rewards";
 export * from "./level-milestones";
 export { syncLevelRewardsForUser } from "./sync-level-rewards";
+export {
+  DEFAULT_EDITOR_THEME_KEY,
+  STORE_ITEMS,
+  XP_BOOST_DURATION_MS,
+  XP_BOOST_MULTIPLIER,
+  getFeaturedStoreItems,
+  getStoreItem,
+  getStoreItemsByCategory,
+  getThemeItemKeys,
+  type StoreItem,
+  type StoreItemCategory,
+  type StoreItemEffect,
+} from "./store-items";

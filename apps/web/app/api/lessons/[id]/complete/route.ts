@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { notifyFriendsOfLessonActivity } from "@/lib/notifications";
 import { validateCodeAnswer, validateQuizAnswer } from "@/lib/lesson-validation";
-import { prisma, ActivityType } from "database";
+import { prisma, ActivityType, XP_BOOST_MULTIPLIER } from "database";
 import { processLevelUps } from "@/lib/level-rewards";
 
 interface QuizContent {
@@ -19,16 +19,24 @@ interface SolutionShape {
   correctIndex?: number;
 }
 
-function calcStreak(currentStreak: number, ultimaAtividade: Date | null): number {
+function calcStreak(
+  currentStreak: number,
+  ultimaAtividade: Date | null,
+  streakFreezes: number
+): { streak: number; usedFreeze: boolean } {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (!ultimaAtividade) return 1;
+  if (!ultimaAtividade) return { streak: 1, usedFreeze: false };
   const last = new Date(ultimaAtividade);
   last.setHours(0, 0, 0, 0);
   const diff = Math.round((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
-  if (diff === 0) return currentStreak;
-  if (diff === 1) return currentStreak + 1;
-  return 1;
+  if (diff === 0) return { streak: currentStreak, usedFreeze: false };
+  if (diff === 1) return { streak: currentStreak + 1, usedFreeze: false };
+  // Esqueceu exatamente um dia: o Protetor de Ofensiva mantém a sequência.
+  if (diff === 2 && streakFreezes > 0) {
+    return { streak: currentStreak + 1, usedFreeze: true };
+  }
+  return { streak: 1, usedFreeze: false };
 }
 
 export async function POST(
@@ -79,27 +87,39 @@ export async function POST(
 
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { streakAtual: true, ultimaAtividade: true, xpTotal: true },
+    select: {
+      streakAtual: true,
+      ultimaAtividade: true,
+      xpTotal: true,
+      streakFreezes: true,
+      xpBoostExpiresAt: true,
+    },
   });
 
   const xpBefore = currentUser?.xpTotal ?? 0;
 
-  const newStreak = calcStreak(
+  const boostActive =
+    !!currentUser?.xpBoostExpiresAt && currentUser.xpBoostExpiresAt > new Date();
+  const xpEarned = boostActive ? lesson.xpReward * XP_BOOST_MULTIPLIER : lesson.xpReward;
+
+  const { streak: newStreak, usedFreeze } = calcStreak(
     currentUser?.streakAtual ?? 0,
-    currentUser?.ultimaAtividade ?? null
+    currentUser?.ultimaAtividade ?? null,
+    currentUser?.streakFreezes ?? 0
   );
 
   await prisma.$transaction([
     prisma.userProgress.create({
-      data: { userId, lessonId, xpEarned: lesson.xpReward, completed: true },
+      data: { userId, lessonId, xpEarned, completed: true },
     }),
     prisma.user.update({
       where: { id: userId },
       data: {
-        xpTotal: { increment: lesson.xpReward },
+        xpTotal: { increment: xpEarned },
         gems: { increment: lesson.gemsReward },
         streakAtual: newStreak,
         ultimaAtividade: new Date(),
+        ...(usedFreeze ? { streakFreezes: { decrement: 1 } } : {}),
       },
     }),
     prisma.activityEvent.create({
@@ -110,14 +130,14 @@ export async function POST(
           lessonId: lesson.id,
           lessonTitle: lesson.title,
           trackTitle: lesson.track.title,
-          xpEarned: lesson.xpReward,
+          xpEarned,
           gemsEarned: lesson.gemsReward,
         },
       },
     }),
   ]);
 
-  const { levelUp } = await processLevelUps(userId, xpBefore, xpBefore + lesson.xpReward);
+  const { levelUp } = await processLevelUps(userId, xpBefore, xpBefore + xpEarned);
 
   await notifyFriendsOfLessonActivity({
     userId,
@@ -137,8 +157,9 @@ export async function POST(
 
   return NextResponse.json({
     correct: true,
-    xpEarned: lesson.xpReward,
+    xpEarned,
     gemsEarned: lesson.gemsReward,
+    xpBoostApplied: boostActive,
     trackSlug: lesson.track.slug,
     levelUp,
   });

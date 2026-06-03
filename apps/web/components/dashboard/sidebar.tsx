@@ -9,6 +9,7 @@ import {
   LogOut,
   Map,
   Settings,
+  Store,
   Trophy,
   User,
   Users,
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/trilhas", label: "Trilhas", icon: Map },
   { href: "/ranking", label: "Ranking", icon: Trophy },
   { href: "/comunidade", label: "Comunidade", icon: Users },
+  { href: "/loja", label: "Loja", icon: Store },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 

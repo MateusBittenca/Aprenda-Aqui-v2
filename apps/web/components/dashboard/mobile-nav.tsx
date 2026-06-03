@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Map, Trophy, User, Users } from "lucide-react";
+import { BookOpen, Map, Store, Trophy, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/trilhas", label: "Trilhas", icon: Map },
   { href: "/ranking", label: "Ranking", icon: Trophy },
   { href: "/comunidade", label: "Comunidade", icon: Users },
+  { href: "/loja", label: "Loja", icon: Store },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 

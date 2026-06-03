@@ -34,6 +34,7 @@ interface CodeLessonProps {
   initialGems: number;
   validationContains?: string | null;
   mode?: LessonMode;
+  editorThemeKey?: string;
 }
 
 function buildPreviewDoc(code: string, mode: LessonMode): string {
@@ -68,6 +69,7 @@ export function CodeLesson({
   initialGems,
   validationContains = null,
   mode = "HTML",
+  editorThemeKey,
 }: CodeLessonProps) {
   const router = useRouter();
   const [code, setCode] = useState(starterCode);
@@ -231,6 +233,7 @@ export function CodeLesson({
                   value={code}
                   onChange={setCode}
                   mode={mode}
+                  themeKey={editorThemeKey}
                   className="h-full min-h-[220px]"
                 />
               </div>
