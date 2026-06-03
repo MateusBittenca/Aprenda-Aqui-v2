@@ -2,12 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { Check, Gem, Lock, Sparkles } from "lucide-react";
+import { Gem, Lock } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
 import type { PathChestNode } from "@/lib/track-path";
 import type { LevelUpPayload } from "@/lib/level-rewards";
 import { acknowledgeLevelCelebration } from "@/lib/lesson-completion";
 import { LevelUpCelebration } from "@/components/levels/level-up-celebration";
+import { ModalPortal } from "@/components/ui/modal-portal";
+import { TreasureChestIcon } from "@/components/icons/treasure-chest-icon";
 
 interface TrackChestNodeProps {
   node: PathChestNode;
@@ -38,14 +40,28 @@ async function claimChest(chestId: string): Promise<ClaimResult> {
   };
 }
 
-function ChestIcon({ status }: { status: PathChestNode["status"] }) {
-  if (status === "claimed") {
-    return <Check className="h-10 w-10" strokeWidth={3} />;
-  }
-  if (status === "locked") {
-    return <Lock className="h-9 w-9" />;
-  }
-  return <Sparkles className="h-10 w-10" />;
+function ChestVisual({ status }: { status: PathChestNode["status"] }) {
+  const variant =
+    status === "claimed" ? "claimed" : status === "available" ? "closed" : "closed";
+
+  return (
+    <div className="relative flex items-center justify-center">
+      <TreasureChestIcon
+        variant={variant}
+        className={cn(
+          "h-16 w-16 drop-shadow-lg",
+          status === "locked" && "opacity-80"
+        )}
+      />
+      {status === "locked" && (
+        <div className="absolute inset-0 flex items-center justify-center pt-2">
+          <div className="rounded-full bg-surface/90 p-1.5 border-2 border-surface-variant shadow-sm">
+            <Lock className="h-6 w-6 text-secondary" strokeWidth={2.5} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
@@ -126,16 +142,16 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
       >
         <div
           className={cn(
-            "rounded-full flex items-center justify-center transition-transform bouncy-transition",
+            "track-chest-node flex items-center justify-center transition-transform bouncy-transition px-3 py-2",
             status === "available" &&
-              "track-chest-available w-28 h-28 shadow-2xl pulse-highlight hover:scale-105",
+              "track-chest-available w-[7.5rem] h-[6.5rem] shadow-2xl pulse-highlight chest-wiggle hover:scale-105",
             status === "claimed" &&
-              "track-chest-claimed w-24 h-24 border-b-8 opacity-70",
+              "track-chest-claimed w-24 h-20 border-b-8 opacity-75",
             status === "locked" &&
-              "w-24 h-24 border-b-8 opacity-50 grayscale bg-surface-container-highest border-surface-dim text-secondary"
+              "w-24 h-20 border-b-8 opacity-50 grayscale bg-surface-container-highest border-surface-dim text-secondary"
           )}
         >
-          <ChestIcon status={status} />
+          <ChestVisual status={status} />
         </div>
 
         <div
@@ -155,44 +171,50 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
       </button>
 
       {modalOpen && rewards && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-on-background/70 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="chest-reward-title"
-        >
-          <div className="card-elevation w-full max-w-md rounded-4xl border-2 border-surface-container-highest bg-surface p-8 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full track-chest-available shadow-xl">
-              <Sparkles className="h-10 w-10" />
-            </div>
-            <h2
-              id="chest-reward-title"
-              className="text-2xl font-black font-display text-on-background mb-2"
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-on-background/70 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chest-reward-title"
+            onClick={closeModal}
+          >
+            <div
+              className="card-elevation relative z-[201] w-full max-w-md rounded-4xl border-2 border-surface-container-highest bg-surface p-8 text-center pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              Baú aberto!
-            </h2>
-            <p className="text-on-surface-variant text-sm mb-6">{node.title}</p>
-            <div className="flex flex-col gap-2 mb-8">
-              {rewards.xp > 0 && (
-                <p className="text-lg font-extrabold track-banner-text">
-                  +{formatNumber(rewards.xp)} XP
-                </p>
-              )}
-              {rewards.gems > 0 && (
-                <p className="flex items-center justify-center gap-2 text-lg font-extrabold text-secondary">
-                  <Gem className="h-5 w-5 fill-secondary" />+{formatNumber(rewards.gems)} gemas
-                </p>
-              )}
+              <div className="mx-auto mb-4 flex h-24 w-28 items-center justify-center rounded-2xl track-chest-available shadow-xl border-b-4 border-primary">
+                <TreasureChestIcon variant="open" className="h-20 w-20 drop-shadow-md" />
+              </div>
+              <h2
+                id="chest-reward-title"
+                className="text-2xl font-black font-display text-on-background mb-2"
+              >
+                Baú aberto!
+              </h2>
+              <p className="text-on-surface-variant text-sm mb-6">{node.title}</p>
+              <div className="flex flex-col gap-2 mb-8">
+                {rewards.xp > 0 && (
+                  <p className="text-lg font-extrabold track-banner-text">
+                    +{formatNumber(rewards.xp)} XP
+                  </p>
+                )}
+                {rewards.gems > 0 && (
+                  <p className="flex items-center justify-center gap-2 text-lg font-extrabold text-secondary">
+                    <Gem className="h-5 w-5 fill-secondary" />+{formatNumber(rewards.gems)} gemas
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={closeModal}
+                className="w-full rounded-2xl bg-primary-container text-on-primary-container font-black py-4 block-shadow-primary bouncy-transition"
+              >
+                Continuar
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="w-full rounded-2xl bg-primary-container text-on-primary-container font-black py-4 block-shadow-primary bouncy-transition"
-            >
-              Continuar
-            </button>
           </div>
-        </div>
+        </ModalPortal>
       )}
 
       {levelUp && (

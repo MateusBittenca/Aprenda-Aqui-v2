@@ -262,6 +262,24 @@
     border: 2px solid rgb(var(--track-dark));
   }
 
+  .track-themed .track-chest-node {
+    border-radius: 1.25rem;
+  }
+
+  .chest-wiggle {
+    animation: chest-wiggle 2.5s ease-in-out infinite;
+  }
+
+  @keyframes chest-wiggle {
+    0%,
+    100% {
+      transform: rotate(-2deg) translateY(0);
+    }
+    50% {
+      transform: rotate(2deg) translateY(-3px);
+    }
+  }
+
   .track-themed .track-node-ring {
     --tw-ring-color: rgb(var(--track-primary));
   }

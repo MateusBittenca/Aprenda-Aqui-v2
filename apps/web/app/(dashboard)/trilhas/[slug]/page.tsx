@@ -8,7 +8,8 @@ import { getWeeklyLeaderboard } from "@/lib/leaderboard";
 import { buildTrackPath, countLessonsToRanking } from "@/lib/track-path";
 import { LearningPath } from "@/components/tracks/learning-path";
 import { TrackProgressSidebar } from "@/components/tracks/track-progress-sidebar";
-import { Sparkles, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
+import { TreasureChestIcon } from "@/components/icons/treasure-chest-icon";
 import { cn } from "@/lib/utils";
 import { TrackIconBadge } from "@/lib/track-icons";
 import { getTrackTheme } from "@/lib/track-theme";
@@ -110,7 +111,7 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
     >
       {chestOpened && (
         <div className="track-banner mb-6 p-4 border-2 rounded-3xl flex items-center gap-4">
-          <Sparkles className="track-text h-8 w-8 shrink-0" />
+          <TreasureChestIcon variant="open" className="h-10 w-10 shrink-0 track-text drop-shadow-sm" />
           <div>
             <p className="font-extrabold text-on-background">Baú resgatado!</p>
             {(chestXp > 0 || chestGems > 0) && (

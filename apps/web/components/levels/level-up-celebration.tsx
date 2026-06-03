@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Gem, Sparkles, Verified } from "lucide-react";
+import { ModalPortal } from "@/components/ui/modal-portal";
 import { formatNumber } from "@/lib/utils";
 import { MASCOT } from "@/lib/mascot";
 
@@ -50,14 +51,19 @@ export function LevelUpCelebration({
   if (!open) return null;
 
   return (
+    <ModalPortal>
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-on-background/80 backdrop-blur-md"
+      className="fixed inset-0 z-[210] flex items-center justify-center p-4 bg-on-background/80 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-labelledby="level-up-title"
+      onClick={onContinue}
     >
       <Confetti />
-      <div className="card-elevation relative w-full max-w-md rounded-4xl border-2 border-primary-container bg-surface p-8 text-center">
+      <div
+        className="card-elevation relative z-[211] w-full max-w-md rounded-4xl border-2 border-primary-container bg-surface p-8 text-center pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="mx-auto mb-4 relative w-24 h-24">
           <Image src={MASCOT_SRC} alt="" fill className="object-contain drop-shadow-lg" />
         </div>
@@ -113,5 +119,6 @@ export function LevelUpCelebration({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }
