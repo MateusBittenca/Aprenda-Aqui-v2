@@ -49,6 +49,8 @@ model User {
   ultimaAtividade      DateTime? @map("ultima_atividade")
   activeTitleKey       String    @default("iniciante") @map("active_title_key")
   lastCelebratedLevel  Int       @default(1) @map("last_celebrated_level")
+  dailyRewardNextDay   Int       @default(1) @map("daily_reward_next_day")
+  dailyRewardLastClaim DateTime? @map("daily_reward_last_claim")
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
 

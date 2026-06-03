@@ -73,6 +73,13 @@ export const HELP_FAQS: HelpFaqItem[] = [
       "Você ganha gemas ao completar lições pela primeira vez. O saldo aparece no topo da tela e no seu perfil. Use gemas para recuperar vidas quando elas acabarem durante uma lição.",
   },
   {
+    id: "recompensas-diarias",
+    category: "recompensas",
+    question: "Como funcionam as recompensas diárias de 7 dias?",
+    answer:
+      "Abra o calendário no topo da tela (ícone com ponto vermelho quando há recompensa disponível). Resgate um prêmio por dia, em sequência, por 7 dias. Se você pular um dia, a sequência reinicia no dia 1. No 7º dia a recompensa é a maior; depois o ciclo começa de novo.",
+  },
+  {
     id: "xp-nivel",
     category: "gamificacao",
     question: "Como subo de nível?",

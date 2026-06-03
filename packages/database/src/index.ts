@@ -16,5 +16,17 @@ if (process.env.NODE_ENV !== "production") {
 
 export * from "@prisma/client";
 export { gemsForXp } from "./gems";
+export {
+  DAILY_REWARD_CYCLE_DAYS,
+  DAILY_REWARD_TIERS,
+  calendarDaysBetween,
+  getDailyRewardTier,
+  nextDayAfterClaim,
+  resolveDailyRewardState,
+  startOfCalendarDay,
+  type DailyRewardDayStatus,
+  type DailyRewardState,
+  type DailyRewardTier,
+} from "./daily-rewards";
 export * from "./level-milestones";
 export { syncLevelRewardsForUser } from "./sync-level-rewards";

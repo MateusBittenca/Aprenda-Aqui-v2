@@ -280,6 +280,140 @@
     }
   }
 
+  @keyframes daily-reward-pop {
+    0% {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    65% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes daily-reward-burst {
+    0% {
+      transform: scale(0.35);
+      opacity: 0.75;
+    }
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes daily-reward-gift-bounce {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    35% {
+      transform: translateY(-10px) scale(1.06);
+    }
+    55% {
+      transform: translateY(2px) scale(0.98);
+    }
+  }
+
+  @keyframes daily-reward-icon-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes daily-reward-card-flash {
+    0% {
+      box-shadow: 0 0 0 0 rgb(var(--color-primary) / 0.55);
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.14);
+      box-shadow: 0 0 28px 6px rgb(var(--color-primary) / 0.45);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 4px 12px rgb(var(--color-primary) / 0.15);
+    }
+  }
+
+  @keyframes daily-reward-claim-shake {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1);
+    }
+    20% {
+      transform: rotate(-6deg) scale(1.05);
+    }
+    40% {
+      transform: rotate(6deg) scale(1.08);
+    }
+    60% {
+      transform: rotate(-4deg) scale(1.05);
+    }
+    80% {
+      transform: rotate(4deg) scale(1.02);
+    }
+  }
+
+  .daily-reward-celebrate-pop {
+    animation: daily-reward-pop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  .daily-reward-celebrate-pop-delay-1 {
+    animation-delay: 0.1s;
+  }
+
+  .daily-reward-celebrate-pop-delay-2 {
+    animation-delay: 0.18s;
+  }
+
+  .daily-reward-celebrate-pop-delay-3 {
+    animation-delay: 0.28s;
+  }
+
+  .daily-reward-celebrate-pop-delay-4 {
+    animation-delay: 0.38s;
+  }
+
+  .daily-reward-shine-ring {
+    animation: daily-reward-burst 0.95s ease-out forwards;
+  }
+
+  .daily-reward-gift-bounce {
+    animation: daily-reward-gift-bounce 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .daily-reward-icon-pulse {
+    animation: daily-reward-icon-pulse 0.6s ease-in-out 2;
+  }
+
+  .daily-reward-card-claimed-flash {
+    animation: daily-reward-card-flash 0.85s ease-out;
+  }
+
+  .daily-reward-claim-shake {
+    animation: daily-reward-claim-shake 0.55s ease-in-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .daily-reward-celebrate-pop,
+    .daily-reward-shine-ring,
+    .daily-reward-gift-bounce,
+    .daily-reward-icon-pulse,
+    .daily-reward-card-claimed-flash,
+    .daily-reward-claim-shake {
+      animation: none;
+    }
+  }
+
   .track-themed .track-node-ring {
     --tw-ring-color: rgb(var(--track-primary));
   }

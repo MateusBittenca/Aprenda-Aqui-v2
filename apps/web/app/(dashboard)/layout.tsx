@@ -7,8 +7,10 @@ import { getUnreadNotificationCount } from "@/lib/notifications";
 import { getUserProfile } from "@/lib/server-stats";
 import { getUserLevelContext } from "@/lib/level-trail-data";
 import { LevelUpProvider } from "@/components/levels/level-up-provider";
+import { DailyRewardsProvider } from "@/components/daily-rewards/daily-rewards-provider";
 import { calculateLevel } from "@/lib/level-system";
 import { getTitleLabel } from "@/lib/level-system";
+import { getDailyRewardStateForUser } from "@/lib/daily-reward-data";
 
 export const dynamic = "force-dynamic";
 
@@ -19,13 +21,14 @@ export default async function DashboardLayout({
 }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  const [profile, unreadNotifications, levelContext] = userId
+  const [profile, unreadNotifications, levelContext, dailyRewardState] = userId
     ? await Promise.all([
         getUserProfile(userId),
         getUnreadNotificationCount(userId),
         getUserLevelContext(userId),
+        getDailyRewardStateForUser(userId),
       ])
-    : [null, 0, null];
+    : [null, 0, null, null];
 
   const level = profile ? calculateLevel(profile.xpTotal) : 1;
   const titleLabel = levelContext
@@ -50,7 +53,7 @@ export default async function DashboardLayout({
     </>
   );
 
-  if (!userId || !levelContext) {
+  if (!userId || !levelContext || !dailyRewardState) {
     return <div className="min-h-screen bg-background">{content}</div>;
   }
 
@@ -61,7 +64,9 @@ export default async function DashboardLayout({
       activeTitleKey={levelContext.activeTitleKey}
       unlockedTitles={levelContext.unlockedTitles}
     >
-      <div className="min-h-screen bg-background">{content}</div>
+      <DailyRewardsProvider initialState={dailyRewardState}>
+        <div className="min-h-screen bg-background">{content}</div>
+      </DailyRewardsProvider>
     </LevelUpProvider>
   );
 }

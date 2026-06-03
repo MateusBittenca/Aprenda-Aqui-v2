@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { Flame, Gem, Zap } from "lucide-react";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { DailyRewardNavButton } from "@/components/daily-rewards/daily-reward-nav-button";
 import { formatNumber } from "@/lib/utils";
 
 interface TopBarProps {
@@ -54,6 +55,8 @@ export function TopBar({
           <Zap className="h-4 w-4" />
           {formatNumber(xpTotal)} XP
         </div>
+
+        <DailyRewardNavButton />
 
         <NotificationBell initialUnreadCount={unreadNotifications} />
 
