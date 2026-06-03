@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@/lib/lesson-completion";
 import type { LevelUpPayload } from "@/lib/level-rewards";
 import { LevelUpCelebration } from "@/components/levels/level-up-celebration";
+import { RewardCelebrationModal } from "@/components/celebration/reward-celebration-modal";
 import { useLessonLives } from "@/hooks/use-lesson-lives";
 import { LessonHeader } from "./lesson-header";
 import { LessonFooter } from "./lesson-footer";
@@ -51,10 +52,10 @@ export function QuizLesson({
   const [footerState, setFooterState] = useState<"idle" | "correct" | "incorrect">("idle");
   const [completing, setCompleting] = useState(false);
   const [completeError, setCompleteError] = useState(false);
+  const pendingLevelUpRef = useRef<LevelUpPayload | null>(null);
+  const pendingRewardsRef = useRef<{ xp: number; gems: number } | null>(null);
   const [levelUp, setLevelUp] = useState<LevelUpPayload | null>(null);
-  const [pendingRewards, setPendingRewards] = useState<{ xp: number; gems: number } | null>(
-    null
-  );
+  const [celebration, setCelebration] = useState<{ xp: number; gems: number } | null>(null);
 
   const {
     lives,
@@ -98,13 +99,17 @@ export function QuizLesson({
       const gemsEarned = result.gemsEarned ?? gemsReward;
 
       if (result.levelUp) {
-        setPendingRewards({ xp, gems: gemsEarned });
-        setLevelUp(result.levelUp);
+        pendingLevelUpRef.current = result.levelUp;
+      }
+
+      if (xp <= 0 && gemsEarned <= 0) {
+        navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems: gemsEarned });
         setCompleting(false);
         return;
       }
 
-      navigateAfterLessonComplete(router, trackSlug, lessonId, { xp, gems: gemsEarned });
+      setCelebration({ xp, gems: gemsEarned });
+      setCompleting(false);
     } catch (err) {
       console.error("[quiz] erro de rede", err);
       setCompleteError(true);
@@ -257,15 +262,51 @@ export function QuizLesson({
         onRefill={handleRefill}
       />
 
-      {levelUp && pendingRewards && (
+      <RewardCelebrationModal
+        open={celebration !== null}
+        variant="lesson"
+        title="Lição concluída!"
+        subtitle={trackTitle}
+        gems={celebration?.gems ?? 0}
+        xp={celebration?.xp ?? 0}
+        ctaLabel="Continuar"
+        zIndex={200}
+        onComplete={() => {
+          if (!celebration) return;
+          pendingRewardsRef.current = celebration;
+          setCelebration(null);
+
+          const pending = pendingLevelUpRef.current;
+          if (pending) {
+            setLevelUp(pending);
+            return;
+          }
+
+          const rewards = pendingRewardsRef.current;
+          pendingRewardsRef.current = null;
+          if (rewards) {
+            navigateAfterLessonComplete(router, trackSlug, lessonId, rewards);
+          }
+        }}
+      />
+
+      {levelUp && (
         <LevelUpCelebration
           open
           levelUp={levelUp}
           onContinue={async () => {
             await acknowledgeLevelCelebration();
-            navigateAfterLessonComplete(router, trackSlug, lessonId, pendingRewards);
+            pendingLevelUpRef.current = null;
             setLevelUp(null);
-            setPendingRewards(null);
+            const rewards = pendingRewardsRef.current;
+            pendingRewardsRef.current = null;
+            if (rewards) {
+              navigateAfterLessonComplete(router, trackSlug, lessonId, rewards);
+            } else {
+              const params = new URLSearchParams({ completed: lessonId });
+              router.push(`/trilhas/${trackSlug}?${params.toString()}`);
+              router.refresh();
+            }
           }}
         />
       )}

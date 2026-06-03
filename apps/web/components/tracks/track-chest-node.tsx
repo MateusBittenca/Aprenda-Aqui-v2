@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import { Gem, Lock } from "lucide-react";
-import { cn, formatNumber } from "@/lib/utils";
+import { useCallback, useRef, useState } from "react";
+import { Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { PathChestNode } from "@/lib/track-path";
 import type { LevelUpPayload } from "@/lib/level-rewards";
 import { acknowledgeLevelCelebration } from "@/lib/lesson-completion";
 import { LevelUpCelebration } from "@/components/levels/level-up-celebration";
-import { ModalPortal } from "@/components/ui/modal-portal";
+import { RewardCelebrationModal } from "@/components/celebration/reward-celebration-modal";
 import { TreasureChestIcon } from "@/components/icons/treasure-chest-icon";
 
 interface TrackChestNodeProps {
@@ -66,12 +66,41 @@ function ChestVisual({ status }: { status: PathChestNode["status"] }) {
 
 export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
   const router = useRouter();
+  const pendingLevelUpRef = useRef<LevelUpPayload | null>(null);
+  const claimedRewardsRef = useRef<{ xp: number; gems: number } | null>(null);
+
   const [status, setStatus] = useState(node.status);
   const [claiming, setClaiming] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [rewards, setRewards] = useState<{ xp: number; gems: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [celebration, setCelebration] = useState<{ xp: number; gems: number } | null>(null);
   const [levelUp, setLevelUp] = useState<LevelUpPayload | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const finishClaim = useCallback(() => {
+    setCelebration(null);
+    pendingLevelUpRef.current = null;
+    const rewards = claimedRewardsRef.current;
+    claimedRewardsRef.current = null;
+    const params = new URLSearchParams({ chest: node.id });
+    if (rewards) {
+      params.set("chestXp", String(rewards.xp));
+      params.set("chestGems", String(rewards.gems));
+    }
+    router.push(`/trilhas/${trackSlug}?${params.toString()}`);
+    router.refresh();
+  }, [node.id, router, trackSlug]);
+
+  const handleCelebrationComplete = useCallback(() => {
+    const pending = pendingLevelUpRef.current;
+    setCelebration(null);
+
+    if (pending) {
+      setLevelUp(pending);
+      pendingLevelUpRef.current = null;
+      return;
+    }
+
+    finishClaim();
+  }, [finishClaim]);
 
   const handleOpen = useCallback(async () => {
     if (status !== "available" || claiming) return;
@@ -88,36 +117,20 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
     }
 
     setStatus("claimed");
+
     const rewardData = {
       xp: result.xpEarned ?? node.xpReward,
       gems: result.gemsEarned ?? node.gemsReward,
     };
-    setRewards(rewardData);
 
     if (result.levelUp) {
-      setLevelUp(result.levelUp);
-      return;
+      pendingLevelUpRef.current = result.levelUp;
     }
 
-    setModalOpen(true);
+    claimedRewardsRef.current = rewardData;
+    setCelebration(rewardData);
     router.refresh();
   }, [status, claiming, node.id, node.xpReward, node.gemsReward, router]);
-
-  const finishClaim = () => {
-    setModalOpen(false);
-    setLevelUp(null);
-    const params = new URLSearchParams({ chest: node.id });
-    if (rewards) {
-      params.set("chestXp", String(rewards.xp));
-      params.set("chestGems", String(rewards.gems));
-    }
-    router.push(`/trilhas/${trackSlug}?${params.toString()}`);
-    router.refresh();
-  };
-
-  const closeModal = () => {
-    finishClaim();
-  };
 
   const isInteractive = status === "available";
 
@@ -148,7 +161,8 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
             status === "claimed" &&
               "track-chest-claimed w-24 h-20 border-b-8 opacity-75",
             status === "locked" &&
-              "w-24 h-20 border-b-8 opacity-50 grayscale bg-surface-container-highest border-surface-dim text-secondary"
+              "w-24 h-20 border-b-8 opacity-50 grayscale bg-surface-container-highest border-surface-dim text-secondary",
+            claiming && status === "available" && "daily-reward-claim-shake"
           )}
         >
           <ChestVisual status={status} />
@@ -162,7 +176,7 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
               : "bg-surface border-2 border-surface-variant text-on-background"
           )}
         >
-          {status === "available" ? "ABRIR BAÚ" : node.title}
+          {status === "available" ? (claiming ? "Abrindo..." : "ABRIR BAÚ") : node.title}
         </div>
 
         {error && (
@@ -170,52 +184,16 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
         )}
       </button>
 
-      {modalOpen && rewards && (
-        <ModalPortal>
-          <div
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-on-background/70 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="chest-reward-title"
-            onClick={closeModal}
-          >
-            <div
-              className="card-elevation relative z-[201] w-full max-w-md rounded-4xl border-2 border-surface-container-highest bg-surface p-8 text-center pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mx-auto mb-4 flex h-24 w-28 items-center justify-center rounded-2xl track-chest-available shadow-xl border-b-4 border-primary">
-                <TreasureChestIcon variant="open" className="h-20 w-20 drop-shadow-md" />
-              </div>
-              <h2
-                id="chest-reward-title"
-                className="text-2xl font-black font-display text-on-background mb-2"
-              >
-                Baú aberto!
-              </h2>
-              <p className="text-on-surface-variant text-sm mb-6">{node.title}</p>
-              <div className="flex flex-col gap-2 mb-8">
-                {rewards.xp > 0 && (
-                  <p className="text-lg font-extrabold track-banner-text">
-                    +{formatNumber(rewards.xp)} XP
-                  </p>
-                )}
-                {rewards.gems > 0 && (
-                  <p className="flex items-center justify-center gap-2 text-lg font-extrabold text-secondary">
-                    <Gem className="h-5 w-5 fill-secondary" />+{formatNumber(rewards.gems)} gemas
-                  </p>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="w-full rounded-2xl bg-primary-container text-on-primary-container font-black py-4 block-shadow-primary bouncy-transition"
-              >
-                Continuar
-              </button>
-            </div>
-          </div>
-        </ModalPortal>
-      )}
+      <RewardCelebrationModal
+        open={celebration !== null}
+        variant="chest"
+        title="Baú aberto!"
+        subtitle={node.title}
+        gems={celebration?.gems ?? 0}
+        xp={celebration?.xp ?? 0}
+        onComplete={handleCelebrationComplete}
+        zIndex={200}
+      />
 
       {levelUp && (
         <LevelUpCelebration
@@ -223,11 +201,8 @@ export function TrackChestNode({ node, trackSlug }: TrackChestNodeProps) {
           levelUp={levelUp}
           onContinue={async () => {
             await acknowledgeLevelCelebration();
-            if (rewards) {
-              setModalOpen(true);
-            }
             setLevelUp(null);
-            router.refresh();
+            finishClaim();
           }}
         />
       )}
