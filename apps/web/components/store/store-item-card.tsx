@@ -2,8 +2,8 @@
 
 import { Check, Gem, Snowflake, Sparkles, Zap } from "lucide-react";
 import type { StoreItem } from "database";
+import { EditorThemePreview } from "@/components/editor/editor-theme-preview";
 import { cn, formatNumber } from "@/lib/utils";
-import { EDITOR_THEMES } from "@/lib/editor-themes";
 
 interface StoreItemCardProps {
   item: StoreItem;
@@ -13,28 +13,6 @@ interface StoreItemCardProps {
   busy: boolean;
   onBuy: (item: StoreItem) => void;
   onEquip: (item: StoreItem) => void;
-}
-
-function ThemePreview({ itemKey }: { itemKey: string }) {
-  const theme = EDITOR_THEMES[itemKey];
-  const background = theme?.preview.background ?? "#1c1f4a";
-  const accents = theme?.preview.accents ?? ["#ffffff", "#ffffff", "#ffffff"];
-
-  return (
-    <div
-      className="relative flex h-full w-full flex-col justify-center gap-2 overflow-hidden rounded-2xl p-4"
-      style={{ backgroundColor: background }}
-    >
-      <div className="flex gap-1">
-        <span className="h-2 w-2 rounded-full bg-red-400" />
-        <span className="h-2 w-2 rounded-full bg-yellow-400" />
-        <span className="h-2 w-2 rounded-full bg-green-400" />
-      </div>
-      <div className="h-2 w-1/2 rounded-full" style={{ backgroundColor: accents[0] }} />
-      <div className="h-2 w-3/4 rounded-full" style={{ backgroundColor: accents[1] }} />
-      <div className="h-2 w-2/3 rounded-full" style={{ backgroundColor: accents[2] }} />
-    </div>
-  );
 }
 
 function PowerUpIcon({ effect }: { effect: StoreItem["effect"] }) {
@@ -70,7 +48,11 @@ export function StoreItemCard({
   return (
     <div className="flex h-full flex-col rounded-3xl border-2 border-surface-variant bg-surface-container-lowest p-4 block-shadow-card bouncy-transition hover:-translate-y-1">
       <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-2xl">
-        {isTheme ? <ThemePreview itemKey={item.key} /> : <PowerUpIcon effect={item.effect} />}
+        {isTheme ? (
+          <EditorThemePreview themeKey={item.key} className="h-full min-h-[140px]" />
+        ) : (
+          <PowerUpIcon effect={item.effect} />
+        )}
         {item.featured && (
           <span className="absolute right-2 top-2 rounded-full bg-tertiary-fixed px-2 py-1 text-[10px] font-black text-on-tertiary-fixed">
             DESTAQUE

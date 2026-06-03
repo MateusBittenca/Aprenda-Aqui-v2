@@ -13,6 +13,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { EditorThemePicker } from "@/components/settings/editor-theme-picker";
 import { ThemeSelector } from "@/components/theme/theme-selector";
 import { cn } from "@/lib/utils";
 
@@ -424,8 +425,16 @@ export function SettingsPanel({ user }: { user: UserSettings }) {
             <h2 className="text-xl font-extrabold mb-8 text-secondary border-b-2 border-surface-variant pb-4 font-display">
               Aparência
             </h2>
-            <div className="max-w-md">
-              <ThemeSelector />
+            <div className="space-y-10">
+              <div className="max-w-md space-y-3">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-secondary">
+                  Tema do aplicativo
+                </h3>
+                <ThemeSelector />
+              </div>
+              <div className="border-t-2 border-surface-variant pt-10">
+                <EditorThemePicker />
+              </div>
             </div>
           </section>
         )}
