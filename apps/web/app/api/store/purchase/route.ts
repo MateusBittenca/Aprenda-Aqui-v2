@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getStoreItem, prisma } from "database";
-import { normalizeEditorThemeKey } from "@/lib/editor-themes";
+import {
+  getThemeInventoryLookupKeys,
+  normalizeEditorThemeKey,
+} from "@/lib/editor-themes";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -44,7 +47,7 @@ export async function POST(request: Request) {
     const owned = await prisma.userInventoryItem.findFirst({
       where: {
         userId,
-        itemKey: { in: [themeKey, itemKey] },
+        itemKey: { in: getThemeInventoryLookupKeys(itemKey) },
       },
     });
     if (owned) {

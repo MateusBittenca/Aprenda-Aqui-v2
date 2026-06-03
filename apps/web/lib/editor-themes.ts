@@ -7,6 +7,14 @@ export function normalizeEditorThemeKey(key: string): string {
   return key.trim().replace(/_/g, "-");
 }
 
+/** Variantes de chave gravadas no inventário (compras antigas usavam underscore). */
+export function getThemeInventoryLookupKeys(key: string): string[] {
+  const normalized = normalizeEditorThemeKey(key);
+  const legacyUnderscore = normalized.replace(/-/g, "_");
+  const trimmed = key.trim();
+  return [...new Set([trimmed, normalized, legacyUnderscore].filter(Boolean))];
+}
+
 export function getMonacoThemeName(key: string): string {
   return normalizeEditorThemeKey(getEditorThemeData(key).key);
 }
