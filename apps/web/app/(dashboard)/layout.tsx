@@ -23,7 +23,7 @@ export default async function DashboardLayout({
   const session = await getServerSession(authOptions);
 
   if (session?.user?.role === "TEACHER") {
-    redirect("/professor");
+    redirect("/professor/trilhas");
   }
 
   const userId = session?.user?.id;

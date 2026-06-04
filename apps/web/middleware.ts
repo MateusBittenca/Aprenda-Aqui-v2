@@ -16,11 +16,13 @@ const studentRoutes = [
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
-    const role = req.nextauth.token?.role as string | undefined;
+    const token = req.nextauth.token;
+    const role = token?.role as string | undefined;
     const isTeacher = role === "TEACHER";
     const isProfessorRoute = pathname.startsWith("/professor");
 
-    if (isProfessorRoute && !isTeacher) {
+    // Professor: só bloqueia se o papel for explicitamente STUDENT
+    if (isProfessorRoute && role === "STUDENT") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
@@ -29,20 +31,14 @@ export default withAuth(
     );
 
     if (isStudentRoute && isTeacher) {
-      return NextResponse.redirect(new URL("/professor", req.url));
+      return NextResponse.redirect(new URL("/professor/trilhas", req.url));
     }
 
     return NextResponse.next();
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
-        if (pathname.startsWith("/professor")) {
-          return !!token;
-        }
-        return !!token;
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 );

@@ -1,18 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { signIn, getSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { getCsrfToken, useSession } from "next-auth/react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
+function destinationForRole(role?: string) {
+  return role === "TEACHER" ? "/professor/trilhas" : "/dashboard";
+}
+
+/** POST nativo (sem json=true) → 302 + Set-Cookie numa única navegação HTTP. */
+function submitCredentialsLogin(
+  csrfToken: string,
+  email: string,
+  password: string,
+  callbackUrl: string
+) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "/api/auth/callback/credentials";
+
+  const fields: Record<string, string> = {
+    csrfToken,
+    callbackUrl,
+    email,
+    password,
+  };
+
+  for (const [name, value] of Object.entries(fields)) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const authError = searchParams.get("error");
+    if (authError === "CredentialsSignin") {
+      setError("Email ou senha incorretos");
+    } else if (authError === "SessionRequired") {
+      setError("Sessão expirada. Entre novamente.");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      window.location.replace(destinationForRole(session.user.role));
+    }
+  }, [status, session]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,31 +87,19 @@ export default function LoginPage() {
         }
       }
 
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Email ou senha incorretos");
+      const csrfToken = await getCsrfToken();
+      if (!csrfToken) {
+        setError("Erro de segurança. Recarregue a página.");
         setLoading(false);
         return;
       }
 
-      let role: string | undefined;
-      const sessionRes = await fetch("/api/auth/session");
-      if (sessionRes.ok) {
-        const sessionData = await sessionRes.json();
-        role = sessionData?.user?.role;
-      }
-      if (!role) {
-        const session = await getSession();
-        role = session?.user?.role;
-      }
-
-      const destination = role === "TEACHER" ? "/professor" : "/dashboard";
-      window.location.href = destination;
+      submitCredentialsLogin(
+        csrfToken,
+        email.trim().toLowerCase(),
+        password,
+        "/auth/redirect"
+      );
     } catch {
       setError("Erro inesperado. Tente novamente.");
       setLoading(false);
@@ -79,102 +119,106 @@ export default function LoginPage() {
       </div>
 
       <div className="flex-1 flex items-center justify-center w-full">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-primary mb-2">
-            Aprenda Aqui!
-          </h1>
-          <p className="text-navy/60">
-            {isRegister
-              ? "Crie sua conta e comece a aprender"
-              : "Entre para continuar aprendendo"}
-          </p>
-        </div>
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-extrabold text-primary mb-2">Aprenda Aqui!</h1>
+            <p className="text-navy/60">
+              {isRegister
+                ? "Crie sua conta e comece a aprender"
+                : "Entre para continuar aprendendo"}
+            </p>
+          </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="card-elevation rounded-3xl p-8 border border-navy/5 space-y-4"
-        >
-          {isRegister && (
+          <form
+            onSubmit={handleSubmit}
+            className="card-elevation rounded-3xl p-8 border border-navy/5 space-y-4"
+          >
+            {isRegister && (
+              <div>
+                <label className="block text-sm font-semibold text-navy mb-1.5">Nome</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-navy/10 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
+                  placeholder="Seu nome"
+                  required
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-semibold text-navy mb-1.5">
-                Nome
-              </label>
+              <label className="block text-sm font-semibold text-navy mb-1.5">Email</label>
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-navy/10 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
-                placeholder="Seu nome"
+                placeholder="seu@email.com"
                 required
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1.5">Senha</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-navy/10 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
+                placeholder="••••••"
+                required
+                minLength={6}
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm font-medium text-center">{error}</p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={loading || status === "loading"}>
+              {loading || status === "loading"
+                ? "Carregando..."
+                : isRegister
+                  ? "Criar Conta"
+                  : "Entrar"}
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsRegister(!isRegister);
+                setError("");
+              }}
+              className="w-full text-sm text-navy/60 hover:text-primary transition-colors"
+            >
+              {isRegister ? "Já tem conta? Entrar" : "Não tem conta? Criar conta"}
+            </button>
+          </form>
+
+          {!isRegister && (
+            <p className="text-center text-xs text-navy/40 mt-4">
+              Demo: demo@aprendaqui.com.br / demo123
+              <br />
+              Professor: professor@aprendaqui.com.br / professor123
+            </p>
           )}
-
-          <div>
-            <label className="block text-sm font-semibold text-navy mb-1.5">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-navy/10 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
-              placeholder="seu@email.com"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-navy mb-1.5">
-              Senha
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-navy/10 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
-              placeholder="••••••"
-              required
-              minLength={6}
-            />
-          </div>
-
-          {error && (
-            <p className="text-red-500 text-sm font-medium text-center">{error}</p>
-          )}
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading
-              ? "Carregando..."
-              : isRegister
-                ? "Criar Conta"
-                : "Entrar"}
-          </Button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setIsRegister(!isRegister);
-              setError("");
-            }}
-            className="w-full text-sm text-navy/60 hover:text-primary transition-colors"
-          >
-            {isRegister
-              ? "Já tem conta? Entrar"
-              : "Não tem conta? Criar conta"}
-          </button>
-        </form>
-
-        {!isRegister && (
-          <p className="text-center text-xs text-navy/40 mt-4">
-            Demo: demo@aprendaqui.com.br / demo123
-            <br />
-            Professor: professor@aprendaqui.com.br / professor123
-          </p>
-        )}
-      </div>
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-secondary font-bold">
+          Carregando...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
