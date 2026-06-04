@@ -1,7 +1,7 @@
 import { PrismaClient, LessonType, ActivityType, NotificationType, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { gemsForXp } from "../src/gems.ts";
-import { syncLevelRewardsForUser } from "../src/sync-level-rewards.ts";
+import { gemsForXp } from "../src/gems";
+import { syncLevelRewardsForUser } from "../src/sync-level-rewards";
 
 const prisma = new PrismaClient();
 
