@@ -22,7 +22,7 @@ export default async function ProfessorLayout({
     <div className="min-h-screen bg-background">
       <ProfessorSidebar />
       <main className="lg:pl-64 min-h-screen">
-        <div className="max-w-[1000px] mx-auto p-6 lg:p-10">{children}</div>
+        <div className="max-w-[1400px] mx-auto p-6 lg:p-10">{children}</div>
       </main>
     </div>
   );
