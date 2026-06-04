@@ -7,7 +7,7 @@ import tracksRouter from "./routes/tracks";
 import lessonsRouter from "./routes/lessons";
 
 const app = express();
-const PORT = process.env.API_PORT ?? 4000;
+const PORT = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);
 
 app.use(
   cors({
@@ -25,8 +25,8 @@ app.use("/tracks", authMiddleware, tracksRouter);
 app.use("/users", authMiddleware, usersRouter);
 app.use("/lessons", authMiddleware, lessonsRouter);
 
-const server = app.listen(PORT, () => {
-  console.log(`API Aprenda Aqui! rodando em http://localhost:${PORT}`);
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`API Aprenda Aqui! rodando na porta ${PORT}`);
 });
 
 server.on("error", (error: NodeJS.ErrnoException) => {

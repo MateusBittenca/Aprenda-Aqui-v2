@@ -1,0 +1,10 @@
+# Serviço Next.js (frontend + rotas /api do NextAuth)
+# Railway → serviço Web → Settings → Config file path: railway.web.toml
+
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm run build:web"
+
+[deploy]
+startCommand = "pnpm run start:web"
+restartPolicyType = "ON_FAILURE"

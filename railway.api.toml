@@ -1,0 +1,13 @@
+# Serviço Express (API REST)
+# Railway → serviço API → Settings → Config file path: railway.api.toml
+
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm run build:api"
+
+[deploy]
+startCommand = "pnpm run start:api"
+releaseCommand = "pnpm run db:migrate:deploy"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
