@@ -13,7 +13,7 @@
     "build:web": "pnpm --filter database generate && pnpm --filter web build",
     "build:api": "pnpm --filter database generate && pnpm --filter api build",
     "start:web": "pnpm --filter web start",
-    "start:api": "pnpm --filter api start",
+    "start:api": "pnpm run db:migrate:deploy && pnpm --filter api start",
     "db:generate": "pnpm --filter database generate",
     "db:migrate": "pnpm --filter database migrate",
     "db:migrate:deploy": "pnpm --filter database migrate:deploy",

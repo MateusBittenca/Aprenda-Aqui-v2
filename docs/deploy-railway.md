@@ -111,6 +111,8 @@ Use **Railway CLI** ou um job temporário — não deixe seed automático em tod
 
 | Sintoma | Causa provável |
 |---------|----------------|
+| MySQL sem tabelas | `DATABASE_URL` ausente no serviço **api** ou migrate não rodou — veja logs do deploy |
+| Healthcheck `/health` falha | API não subiu (confira logs); serviço **api** precisa de `DATABASE_URL` + `NEXTAUTH_SECRET` |
 | Erro de conexão MySQL | `DATABASE_URL` ausente ou URL errada |
 | CORS / API bloqueada | `NEXTAUTH_URL` no api diferente da URL real do web |
 | Dashboard vazio | `NEXT_PUBLIC_API_URL` errada ou API fora do ar |

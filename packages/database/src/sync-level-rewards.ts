@@ -3,7 +3,7 @@ import {
   getLevelFromXp,
   getMilestoneByLevel,
   getMilestonesForLevelRange,
-} from "./level-milestones";
+} from "./level-milestones.ts";
 
 export interface SyncLevelRewardsResult {
   level: number;

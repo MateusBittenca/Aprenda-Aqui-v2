@@ -3,4 +3,5 @@
 nixPkgs = ["nodejs_22", "pnpm-9_x"]
 
 [phases.install]
-cmds = ["pnpm install --frozen-lockfile"]
+# prisma CLI precisa estar disponível no deploy (migrate deploy)
+cmds = ["pnpm install --frozen-lockfile --prod=false"]

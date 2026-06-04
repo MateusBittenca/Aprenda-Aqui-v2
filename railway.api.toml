@@ -6,6 +6,7 @@ builder = "nixpacks"
 buildCommand = "pnpm run build:api"
 
 [deploy]
+# migrate:deploy roda no start (tabelas) e no release (antes do tráfego)
 startCommand = "pnpm run start:api"
 releaseCommand = "pnpm run db:migrate:deploy"
 healthcheckPath = "/health"

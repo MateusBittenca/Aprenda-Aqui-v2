@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export * from "@prisma/client";
-export { gemsForXp } from "./gems";
+export { gemsForXp } from "./gems.ts";
 export {
   DAILY_REWARD_CYCLE_DAYS,
   DAILY_REWARD_TIERS,
@@ -27,9 +27,9 @@ export {
   type DailyRewardDayStatus,
   type DailyRewardState,
   type DailyRewardTier,
-} from "./daily-rewards";
-export * from "./level-milestones";
-export { syncLevelRewardsForUser } from "./sync-level-rewards";
+} from "./daily-rewards.ts";
+export * from "./level-milestones.ts";
+export { syncLevelRewardsForUser } from "./sync-level-rewards.ts";
 export {
   DEFAULT_EDITOR_THEME_KEY,
   STORE_ITEMS,
@@ -42,4 +42,4 @@ export {
   type StoreItem,
   type StoreItemCategory,
   type StoreItemEffect,
-} from "./store-items";
+} from "./store-items.ts";
