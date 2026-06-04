@@ -11,19 +11,14 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q")?.trim() ?? "";
-  if (q.length < 2) {
-    return NextResponse.json({ users: [] });
-  }
 
   const users = await prisma.user.findMany({
-    where: {
-      OR: [
-        { email: { contains: q } },
-        { name: { contains: q } },
-      ],
-    },
+    where: q
+      ? {
+          OR: [{ email: { contains: q } }, { name: { contains: q } }],
+        }
+      : undefined,
     select: { id: true, name: true, email: true, role: true },
-    take: 10,
     orderBy: { name: "asc" },
   });
 
