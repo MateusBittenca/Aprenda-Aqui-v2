@@ -5,17 +5,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { StatusBanner } from "@/components/professor/professor-ui";
+import { TrackIconPicker } from "@/components/professor/track-icon-picker";
+import { TrackColorPicker } from "@/components/professor/track-color-picker";
 import { slugify } from "@/lib/professor-validation";
-
-const ICON_OPTIONS = ["code", "palette", "braces", "terminal", "layers"];
-
-const DEFAULT_COLORS = {
-  colorPrimary: "#58CC02",
-  colorDark: "#1f5100",
-  colorLight: "#87fe45",
-  colorMuted: "#2b6c00",
-  colorOnPrimary: "#ffffff",
-};
+import { DEFAULT_TRACK_COLORS } from "@/lib/track-options";
 
 export interface TrackFormValues {
   title: string;
@@ -46,11 +39,11 @@ export function TrackForm({ initial, trackId, mode }: TrackFormProps) {
   const [icon, setIcon] = useState(initial?.icon ?? "code");
   const [order, setOrder] = useState(initial?.order ?? 0);
   const [colors, setColors] = useState({
-    colorPrimary: initial?.colorPrimary ?? DEFAULT_COLORS.colorPrimary,
-    colorDark: initial?.colorDark ?? DEFAULT_COLORS.colorDark,
-    colorLight: initial?.colorLight ?? DEFAULT_COLORS.colorLight,
-    colorMuted: initial?.colorMuted ?? DEFAULT_COLORS.colorMuted,
-    colorOnPrimary: initial?.colorOnPrimary ?? DEFAULT_COLORS.colorOnPrimary,
+    colorPrimary: initial?.colorPrimary ?? DEFAULT_TRACK_COLORS.colorPrimary,
+    colorDark: initial?.colorDark ?? DEFAULT_TRACK_COLORS.colorDark,
+    colorLight: initial?.colorLight ?? DEFAULT_TRACK_COLORS.colorLight,
+    colorMuted: initial?.colorMuted ?? DEFAULT_TRACK_COLORS.colorMuted,
+    colorOnPrimary: initial?.colorOnPrimary ?? DEFAULT_TRACK_COLORS.colorOnPrimary,
   });
   const [published, setPublished] = useState(initial?.published ?? false);
   const [loading, setLoading] = useState(false);
@@ -127,35 +120,27 @@ export function TrackForm({ initial, trackId, mode }: TrackFormProps) {
           />
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-1">Slug</label>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => {
-                setSlugTouched(true);
-                setSlug(e.target.value);
-              }}
-              required
-              className="w-full rounded-2xl border-2 border-surface-variant bg-surface px-4 py-3 font-medium"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-1">Ícone</label>
-            <select
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              className="w-full rounded-2xl border-2 border-surface-variant bg-surface px-4 py-3 font-medium"
-            >
-              {ICON_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div>
+          <label className="block text-sm font-bold text-secondary mb-1">Slug</label>
+          <input
+            type="text"
+            value={slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(e.target.value);
+            }}
+            required
+            className="w-full rounded-2xl border-2 border-surface-variant bg-surface px-4 py-3 font-medium"
+          />
         </div>
+
+        <TrackIconPicker
+          value={icon}
+          onChange={setIcon}
+          accentColor={colors.colorPrimary}
+        />
+
+        <TrackColorPicker value={colors} onChange={setColors} />
 
         <div>
           <label className="block text-sm font-bold text-secondary mb-1">Ordem</label>
@@ -166,31 +151,6 @@ export function TrackForm({ initial, trackId, mode }: TrackFormProps) {
             onChange={(e) => setOrder(Number(e.target.value))}
             className="w-full rounded-2xl border-2 border-surface-variant bg-surface px-4 py-3 font-medium max-w-[120px]"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-bold text-secondary mb-2">Cores</label>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {(
-              Object.keys(colors) as Array<keyof typeof colors>
-            ).map((key) => (
-              <div key={key} className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={colors[key]}
-                  onChange={(e) => setColors({ ...colors, [key]: e.target.value })}
-                  className="h-10 w-10 rounded-lg border-2 border-surface-variant cursor-pointer"
-                />
-                <span className="text-xs font-bold text-secondary">{key}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            className="mt-4 rounded-2xl p-4 text-center font-bold"
-            style={{ backgroundColor: colors.colorPrimary, color: colors.colorOnPrimary }}
-          >
-            Preview: {title || "Trilha"}
-          </div>
         </div>
 
         <label className="flex items-center gap-2 cursor-pointer">

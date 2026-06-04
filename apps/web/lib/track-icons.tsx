@@ -1,33 +1,22 @@
 import {
-  Braces,
   Check,
   Code2,
   FileCode,
   HelpCircle,
   Link2,
   List,
-  Palette,
   Tags,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TRACK_ICON_MAP } from "@/lib/track-options";
 
 type LessonType = "QUIZ" | "CODE";
 
-const TRACK_ICON_MAP: Record<string, LucideIcon> = {
-  code: FileCode,
-  html: FileCode,
-  palette: Palette,
-  css: Palette,
-  braces: Braces,
-  js: Braces,
-  javascript: Braces,
-};
-
 const SLUG_ICON_MAP: Record<string, LucideIcon> = {
   html: FileCode,
-  css: Palette,
-  javascript: Braces,
+  css: TRACK_ICON_MAP.palette ?? FileCode,
+  javascript: TRACK_ICON_MAP.braces ?? FileCode,
 };
 
 export function resolveTrackIcon(iconKey?: string | null, slug?: string): LucideIcon {
@@ -43,7 +32,7 @@ export function resolveLessonIcon(type: LessonType, title?: string): LucideIcon 
   if (normalized.includes("link") || normalized.includes("âncora")) return Link2;
   if (normalized.includes("tag")) return Tags;
   if (normalized.includes("função") || normalized.includes("arrow") || normalized.includes("array")) {
-    return Braces;
+    return TRACK_ICON_MAP.braces ?? FileCode;
   }
 
   return type === "QUIZ" ? HelpCircle : Code2;

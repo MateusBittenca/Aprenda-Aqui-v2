@@ -5,44 +5,9 @@ import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBanner } from "@/components/professor/professor-ui";
+import { TrackIconPicker } from "@/components/professor/track-icon-picker";
+import { TrackColorPicker } from "@/components/professor/track-color-picker";
 import type { EditorPathLesson, EditorTrackData } from "@/lib/track-editor-path";
-
-const ICON_OPTIONS = ["code", "palette", "braces", "terminal", "layers"];
-
-const COLOR_PRESETS = [
-  {
-    name: "Verde",
-    colorPrimary: "#58CC02",
-    colorDark: "#1f5100",
-    colorLight: "#87fe45",
-    colorMuted: "#2b6c00",
-    colorOnPrimary: "#ffffff",
-  },
-  {
-    name: "Laranja",
-    colorPrimary: "#fb923c",
-    colorDark: "#c2410c",
-    colorLight: "#fdba74",
-    colorMuted: "#ea580c",
-    colorOnPrimary: "#ffffff",
-  },
-  {
-    name: "Azul",
-    colorPrimary: "#3b82f6",
-    colorDark: "#1e3a8a",
-    colorLight: "#93c5fd",
-    colorMuted: "#2563eb",
-    colorOnPrimary: "#ffffff",
-  },
-  {
-    name: "Roxo",
-    colorPrimary: "#a855f7",
-    colorDark: "#581c87",
-    colorLight: "#d8b4fe",
-    colorMuted: "#7e22ce",
-    colorOnPrimary: "#ffffff",
-  },
-];
 
 interface QuizQuestion {
   question: string;
@@ -117,53 +82,13 @@ export function EditorTrackPanel({ track, onSuccess, onPreviewChange, onMessage 
       <Field label="Descrição" value={description} onChange={setDescription} multiline required />
       <Field label="Slug" value={slug} onChange={setSlug} required />
 
-      <div>
-        <label className="block text-xs font-bold text-secondary uppercase mb-2">Ícone</label>
-        <div className="flex flex-wrap gap-2">
-          {ICON_OPTIONS.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => setIcon(opt)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border-2 bouncy-transition ${
-                icon === opt
-                  ? "border-primary bg-primary-container text-on-primary-container"
-                  : "border-surface-variant bg-surface"
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
+      <TrackIconPicker
+        value={icon}
+        onChange={setIcon}
+        accentColor={colors.colorPrimary}
+      />
 
-      <div>
-        <label className="block text-xs font-bold text-secondary uppercase mb-2">Paleta</label>
-        <div className="grid grid-cols-2 gap-2">
-          {COLOR_PRESETS.map((preset) => (
-            <button
-              key={preset.name}
-              type="button"
-              onClick={() =>
-                setColors({
-                  colorPrimary: preset.colorPrimary,
-                  colorDark: preset.colorDark,
-                  colorLight: preset.colorLight,
-                  colorMuted: preset.colorMuted,
-                  colorOnPrimary: preset.colorOnPrimary,
-                })
-              }
-              className="flex items-center gap-2 p-2 rounded-xl border-2 border-surface-variant hover:border-primary bouncy-transition"
-            >
-              <span
-                className="w-6 h-6 rounded-full border-2 border-surface-variant shrink-0"
-                style={{ backgroundColor: preset.colorPrimary }}
-              />
-              <span className="text-xs font-bold">{preset.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <TrackColorPicker value={colors} onChange={setColors} />
 
       <label className="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
