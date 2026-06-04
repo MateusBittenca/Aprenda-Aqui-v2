@@ -150,7 +150,6 @@ export function TrackVisualEditor({ initialTrack }: TrackVisualEditorProps) {
     if (selection.type === "new-lesson") {
       return (
         <EditorLessonPanel
-          trackId={track.id}
           unitId={selection.unitId}
           mode="create"
           initialType={selection.lessonType}
@@ -162,7 +161,6 @@ export function TrackVisualEditor({ initialTrack }: TrackVisualEditorProps) {
     if (selection.type === "lesson" && selectedLesson) {
       return (
         <EditorLessonPanel
-          trackId={track.id}
           unitId={selection.unitId}
           lesson={selectedLesson}
           mode="edit"

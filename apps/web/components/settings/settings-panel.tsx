@@ -3,16 +3,7 @@
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  Bell,
-  Lock,
-  LogOut,
-  Mail,
-  Moon,
-  Save,
-  Settings,
-  User,
-} from "lucide-react";
+import { Lock, LogOut, Mail, Save, Settings } from "lucide-react";
 import { EditorThemePicker } from "@/components/settings/editor-theme-picker";
 import { ThemeSelector } from "@/components/theme/theme-selector";
 import { cn } from "@/lib/utils";
@@ -64,7 +55,10 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex items-center justify-between gap-4 py-4 border-b-2 border-surface-container-highest last:border-0 cursor-pointer group">
+    <label
+      className="flex items-center justify-between gap-4 py-4 border-b-2 border-surface-container-highest last:border-0 cursor-pointer group"
+      onClick={() => onChange(!checked)}
+    >
       <div>
         <h4 className="font-bold text-on-background">{label}</h4>
         <p className="text-sm text-secondary mt-0.5">{description}</p>

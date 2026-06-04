@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 
 interface UnitRowActionsProps {
   unitId: string;
-  trackId: string;
   title: string;
   isFirst: boolean;
   isLast: boolean;
@@ -16,7 +15,6 @@ interface UnitRowActionsProps {
 
 export function UnitRowActions({
   unitId,
-  trackId,
   title,
   isFirst,
   isLast,

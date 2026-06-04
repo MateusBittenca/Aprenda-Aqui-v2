@@ -12,7 +12,7 @@ export function getThemeInventoryLookupKeys(key: string): string[] {
   const normalized = normalizeEditorThemeKey(key);
   const legacyUnderscore = normalized.replace(/-/g, "_");
   const trimmed = key.trim();
-  return [...new Set([trimmed, normalized, legacyUnderscore].filter(Boolean))];
+  return Array.from(new Set([trimmed, normalized, legacyUnderscore].filter(Boolean)));
 }
 
 export function getMonacoThemeName(key: string): string {

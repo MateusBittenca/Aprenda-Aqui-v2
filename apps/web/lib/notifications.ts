@@ -1,4 +1,4 @@
-import { prisma, NotificationType } from "database";
+import { prisma, NotificationType, Prisma } from "database";
 import { getFriendIds } from "@/lib/community";
 import type { NotificationItem, NotificationMetadata } from "@/lib/notification-types";
 
@@ -15,7 +15,7 @@ export async function createNotification(params: {
       userId: params.userId,
       actorId: params.actorId ?? null,
       type: params.type,
-      metadata: params.metadata,
+      metadata: params.metadata as Prisma.InputJsonValue,
     },
   });
 }

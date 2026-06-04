@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import type { Track } from "@prisma/client";
+import type { Track } from "database";
 
 export function revalidateProfessorContent(track?: Pick<Track, "slug"> | null) {
   revalidatePath("/trilhas");

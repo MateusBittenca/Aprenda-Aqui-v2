@@ -43,7 +43,6 @@ export async function POST(request: Request) {
   }
 
   if (item.effect === "editor_theme") {
-    const themeKey = normalizeEditorThemeKey(itemKey);
     const owned = await prisma.userInventoryItem.findFirst({
       where: {
         userId,
@@ -82,19 +81,16 @@ export async function POST(request: Request) {
     userData.activeEditorThemeKey = normalizeEditorThemeKey(itemKey);
   }
 
-  const operations: Parameters<typeof prisma.$transaction>[0] = [
+  const [updatedUser] = await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: userData }),
-  ];
-
-  if (item.effect === "editor_theme") {
-    operations.push(
-      prisma.userInventoryItem.create({
-        data: { userId, itemKey: normalizeEditorThemeKey(itemKey) },
-      })
-    );
-  }
-
-  const [updatedUser] = await prisma.$transaction(operations);
+    ...(item.effect === "editor_theme"
+      ? [
+          prisma.userInventoryItem.create({
+            data: { userId, itemKey: normalizeEditorThemeKey(itemKey) },
+          }),
+        ]
+      : []),
+  ]);
 
   revalidatePath("/loja");
   revalidatePath("/dashboard", "layout");

@@ -15,7 +15,6 @@ interface QuizQuestion {
 
 interface LessonFormProps {
   unitId: string;
-  trackId: string;
   lessonId?: string;
   mode: "create" | "edit";
   initial?: {
@@ -35,7 +34,7 @@ const emptyQuizQuestion = (): QuizQuestion => ({
   correctIndex: 0,
 });
 
-export function LessonForm({ unitId, trackId, lessonId, mode, initial }: LessonFormProps) {
+export function LessonForm({ unitId, lessonId, mode, initial }: LessonFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initial?.title ?? "");
   const [type, setType] = useState<"QUIZ" | "CODE">(initial?.type ?? "QUIZ");

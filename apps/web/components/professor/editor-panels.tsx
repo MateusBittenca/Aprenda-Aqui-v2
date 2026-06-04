@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { StatusBanner } from "@/components/professor/professor-ui";
 import { TrackIconPicker } from "@/components/professor/track-icon-picker";
 import { TrackColorPicker } from "@/components/professor/track-color-picker";
 import type { EditorPathLesson, EditorTrackData } from "@/lib/track-editor-path";
@@ -186,7 +185,6 @@ export function EditorUnitPanel({ trackId, unit, mode, onSuccess, onMessage }: E
 }
 
 interface EditorLessonPanelProps extends PanelProps {
-  trackId: string;
   unitId: string;
   lesson?: EditorPathLesson;
   mode: "create" | "edit";
@@ -194,7 +192,6 @@ interface EditorLessonPanelProps extends PanelProps {
 }
 
 export function EditorLessonPanel({
-  trackId,
   unitId,
   lesson,
   mode,

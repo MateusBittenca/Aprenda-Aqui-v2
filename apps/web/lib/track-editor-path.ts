@@ -98,7 +98,6 @@ export function buildEditorTrackPath(units: EditorPathUnit[]): EditorPathNode[] 
     }
 
     unit.lessons.forEach((lesson, lessonIndex) => {
-      const prevUnit = lessonIndex === 0 && unitIndex > 0 ? units[unitIndex - 1] : null;
       const showUnitTitle = lessonIndex === 0;
 
       const offsetX =

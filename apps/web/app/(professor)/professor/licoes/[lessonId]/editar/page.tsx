@@ -25,7 +25,6 @@ export default async function EditLessonPage({ params }: PageProps) {
       </Link>
       <h1 className="text-3xl font-extrabold font-display text-primary mb-6">Editar lição</h1>
       <LessonForm
-        trackId={lesson.trackId}
         unitId={lesson.unitId}
         lessonId={lessonId}
         mode="edit"

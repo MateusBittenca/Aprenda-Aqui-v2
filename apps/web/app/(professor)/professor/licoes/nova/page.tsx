@@ -26,7 +26,7 @@ export default async function NewLessonPage({ searchParams }: PageProps) {
         ← {unit.title}
       </Link>
       <h1 className="text-3xl font-extrabold font-display text-primary mb-6">Nova lição</h1>
-      <LessonForm trackId={trackId} unitId={unitId} mode="create" />
+      <LessonForm unitId={unitId} mode="create" />
     </div>
   );
 }
