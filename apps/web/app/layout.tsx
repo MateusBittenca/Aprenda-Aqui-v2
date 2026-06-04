@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/components/providers/session-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";

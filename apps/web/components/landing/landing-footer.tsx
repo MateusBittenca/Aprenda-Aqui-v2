@@ -19,7 +19,7 @@ export function LandingFooter() {
             Aprenda Aqui!
           </div>
           <p className="text-on-surface-variant dark:text-on-surface-variant">
-            © 2024 Aprenda Aqui! - Transformando código em aventura.
+            © 2026 Aprenda Aqui! - Transformando código em aventura.
           </p>
         </div>
         <div className="flex gap-6">
