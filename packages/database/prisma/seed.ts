@@ -1,4 +1,4 @@
-import { PrismaClient, LessonType, ActivityType, NotificationType } from "@prisma/client";
+import { PrismaClient, LessonType, ActivityType, NotificationType, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { gemsForXp } from "../src/gems";
 import { syncLevelRewardsForUser } from "../src/sync-level-rewards";
@@ -31,6 +31,7 @@ async function main() {
   await prisma.user.deleteMany();
 
   const passwordHash = await bcrypt.hash("demo123", 10);
+  const professorPasswordHash = await bcrypt.hash("professor123", 10);
 
   const demoUser = await prisma.user.create({
     data: {
@@ -40,6 +41,16 @@ async function main() {
       xpTotal: 0,
       streakAtual: 3,
       ultimaAtividade: new Date(),
+      role: UserRole.STUDENT,
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      name: "Prof. Aprenda",
+      email: "professor@aprendaqui.com.br",
+      passwordHash: professorPasswordHash,
+      role: UserRole.TEACHER,
     },
   });
 
@@ -918,6 +929,7 @@ async function main() {
 
   console.log("Seed concluído!");
   console.log("Usuário demo: demo@aprendaqui.com.br / demo123");
+  console.log("Professor: professor@aprendaqui.com.br / professor123");
   console.log("Outros usuários: maria@, joao@, ana@, carlos@aprendaqui.com.br / demo123");
 }
 

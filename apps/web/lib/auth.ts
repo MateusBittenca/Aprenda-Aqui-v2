@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
+          role: user.role,
         };
       },
     }),
@@ -54,6 +55,15 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.role = user.role;
+      } else if (token.id && !token.role) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+        }
       }
       if (trigger === "update" && session?.name) {
         token.name = session.name;
@@ -65,6 +75,9 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         if (token.name) {
           session.user.name = token.name as string;
+        }
+        if (token.role) {
+          session.user.role = token.role as "STUDENT" | "TEACHER";
         }
       }
       return session;

@@ -41,7 +41,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     },
   });
 
-  if (!lesson) {
+  if (!lesson || !lesson.published) {
     notFound();
   }
 

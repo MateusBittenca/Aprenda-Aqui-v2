@@ -63,7 +63,7 @@ export async function POST(
     include: { track: { select: { slug: true, title: true } } },
   });
 
-  if (!lesson) {
+  if (!lesson || !lesson.published) {
     return NextResponse.json({ error: "Lição não encontrada" }, { status: 404 });
   }
 

@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { TopBar } from "@/components/dashboard/top-bar";
 import { MobileNav } from "@/components/dashboard/mobile-nav";
@@ -20,6 +21,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
+
+  if (session?.user?.role === "TEACHER") {
+    redirect("/professor");
+  }
+
   const userId = session?.user?.id;
   const [profile, unreadNotifications, levelContext, dailyRewardState] = userId
     ? await Promise.all([

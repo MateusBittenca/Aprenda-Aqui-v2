@@ -45,12 +45,15 @@ export default async function TrackDetailPage({ params, searchParams }: TrackPag
   const userId = session?.user?.id;
 
   const track = await prisma.track.findUnique({
-    where: { slug: params.slug },
+    where: { slug: params.slug, published: true },
     include: {
       units: {
         orderBy: { order: "asc" },
         include: {
-          lessons: { orderBy: { order: "asc" } },
+          lessons: {
+            where: { published: true },
+            orderBy: { order: "asc" },
+          },
         },
       },
       chests: { orderBy: { order: "asc" } },

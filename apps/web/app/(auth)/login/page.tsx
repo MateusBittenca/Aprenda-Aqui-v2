@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,8 +47,19 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      let role: string | undefined;
+      const sessionRes = await fetch("/api/auth/session");
+      if (sessionRes.ok) {
+        const sessionData = await sessionRes.json();
+        role = sessionData?.user?.role;
+      }
+      if (!role) {
+        const session = await getSession();
+        role = session?.user?.role;
+      }
+
+      const destination = role === "TEACHER" ? "/professor" : "/dashboard";
+      window.location.href = destination;
     } catch {
       setError("Erro inesperado. Tente novamente.");
       setLoading(false);
@@ -160,6 +169,8 @@ export default function LoginPage() {
         {!isRegister && (
           <p className="text-center text-xs text-navy/40 mt-4">
             Demo: demo@aprendaqui.com.br / demo123
+            <br />
+            Professor: professor@aprendaqui.com.br / professor123
           </p>
         )}
       </div>

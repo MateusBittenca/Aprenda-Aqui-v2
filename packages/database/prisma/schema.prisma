@@ -36,6 +36,11 @@ enum NotificationType {
   FRIEND_ACTIVITY
 }
 
+enum UserRole {
+  STUDENT
+  TEACHER
+}
+
 model User {
   id              String    @id @default(cuid())
   name            String
@@ -54,6 +59,7 @@ model User {
   streakFreezes        Int       @default(0) @map("streak_freezes")
   xpBoostExpiresAt     DateTime? @map("xp_boost_expires_at")
   activeEditorThemeKey String    @default("aprenda-aqui") @map("active_editor_theme_key")
+  role                 UserRole  @default(STUDENT)
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
 
@@ -149,6 +155,7 @@ model Track {
   colorLight     String   @default("#87fe45") @map("color_light")
   colorMuted     String   @default("#2b6c00") @map("color_muted")
   colorOnPrimary String   @default("#ffffff") @map("color_on_primary")
+  published      Boolean  @default(true)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -184,6 +191,7 @@ model Lesson {
   order     Int        @default(0)
   xpReward   Int @default(10) @map("xp_reward")
   gemsReward Int @default(5) @map("gems_reward")
+  published  Boolean  @default(true)
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
 

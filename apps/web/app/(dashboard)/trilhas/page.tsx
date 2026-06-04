@@ -18,12 +18,16 @@ export default async function TrilhasPage() {
   const userId = session?.user?.id;
 
   const tracks: TrackWithUnits[] = await prisma.track.findMany({
+    where: { published: true },
     orderBy: { order: "asc" },
     include: {
       units: {
         orderBy: { order: "asc" },
         include: {
-          lessons: { orderBy: { order: "asc" } },
+          lessons: {
+            where: { published: true },
+            orderBy: { order: "asc" },
+          },
         },
       },
     },

@@ -137,6 +137,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats 
       getWeeklyXpDays(userId),
       getContributionGraphData(userId),
       prisma.lesson.findMany({
+        where: { published: true, track: { published: true } },
         orderBy: [
           { track: { order: "asc" } },
           { unit: { order: "asc" } },
