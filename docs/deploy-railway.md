@@ -118,6 +118,7 @@ Use **Railway CLI** ou um job temporário — não deixe seed automático em tod
 | Dashboard vazio | `NEXT_PUBLIC_API_URL` errada ou API fora do ar |
 | 401 na API | `NEXTAUTH_SECRET` diferente entre web e api |
 | Build falha Prisma | `build:web` / `build:api` já rodam `prisma generate` |
+| Login no iPhone/Safari: “servidor não pode ser encontrado” e URL `*.railway.internal` | `NEXTAUTH_URL` apontando para host **interno** do Railway. Use a URL **pública** (`https://….up.railway.app` ou domínio customizado). **Nunca** use `*.railway.internal` em `NEXTAUTH_URL`. O app tenta corrigir via `RAILWAY_PUBLIC_DOMAIN`, mas defina `NEXTAUTH_URL` corretamente no painel. |
 
 Se o MySQL exigir SSL e o Prisma falhar, tente acrescentar na URL (conforme documentação Railway/Prisma):
 

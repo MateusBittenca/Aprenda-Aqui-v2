@@ -2,6 +2,9 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "database";
+import { ensurePublicNextAuthUrl, getAppBaseUrl } from "@/lib/app-url";
+
+ensurePublicNextAuthUrl();
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -85,9 +88,16 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      if (url.startsWith(baseUrl)) return url;
-      return baseUrl;
+      const publicBase = getAppBaseUrl(baseUrl);
+      if (url.startsWith("/")) return `${publicBase}${url}`;
+      try {
+        const target = new URL(url);
+        const base = new URL(publicBase);
+        if (target.origin === base.origin) return url;
+      } catch {
+        /* URL relativa ou inválida */
+      }
+      return publicBase;
     },
   },
 };
