@@ -91,7 +91,24 @@ NEXT_PUBLIC_API_URL=https://aprenda-api-production.up.railway.app
 2. Deploy da **api** (roda `prisma migrate deploy` no `releaseCommand`).
 3. Deploy do **web**.
 
-## 6. Seed (opcional, só primeira vez)
+## 6. Sincronizar trilhas do banco local para produção
+
+Se você criou ou editou trilhas localmente e quer enviar para produção **sem apagar usuários**:
+
+1. No Railway → **MySQL** → **Settings** → **Networking**, copie o endereço público (ex.: `algo.proxy.rlwy.net:40404`).
+2. Na raiz do projeto, crie `.env.railway` (arquivo **ignorado pelo Git**):
+
+```bash
+cp .env.railway.example .env.railway
+# Edite .env.railway com host, porta e senha reais
+pnpm run db:sync-tracks
+```
+
+O script copia `tracks`, `units`, `lessons` e `track_chests` por `slug`. Trilhas que já existem com o mesmo conteúdo são ignoradas; trilhas novas são criadas.
+
+> Use a URL **pública** (TCP Proxy), não `mysql.railway.internal`.
+
+## 7. Seed (opcional, só primeira vez)
 
 Se o banco estiver vazio e quiser dados iniciais, no serviço **api** (ou one-off):
 
@@ -101,13 +118,13 @@ pnpm run db:seed
 
 Use **Railway CLI** ou um job temporário — não deixe seed automático em todo deploy.
 
-## 7. Checklist pós-deploy
+## 8. Checklist pós-deploy
 
 - [ ] `https://sua-api/health` retorna `{"status":"ok"}`
 - [ ] Login em `https://sua-web/login` funciona
 - [ ] Dashboard carrega (confirma `NEXT_PUBLIC_API_URL` e `NEXTAUTH_SECRET` iguais nos dois serviços)
 
-## 8. Problemas comuns
+## 9. Problemas comuns
 
 | Sintoma | Causa provável |
 |---------|----------------|
@@ -124,6 +141,6 @@ Se o MySQL exigir SSL e o Prisma falhar, tente acrescentar na URL (conforme docu
 
 `?sslaccept=strict`
 
-## 9. Desenvolvimento local
+## 10. Desenvolvimento local
 
 Copie `.env.example` para `.env` na raiz do repositório e ajuste os valores locais.

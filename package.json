@@ -20,6 +20,7 @@
     "db:migrate:deploy": "pnpm --filter database migrate:deploy",
     "db:ensure-colors": "pnpm --filter database ensure-track-colors",
     "db:seed": "pnpm --filter database seed",
+    "db:sync-tracks": "pnpm --filter database sync-tracks",
     "db:studio": "pnpm --filter database studio"
   },
   "devDependencies": {

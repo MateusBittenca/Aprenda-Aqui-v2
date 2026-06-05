@@ -16,6 +16,14 @@ out/
 .env
 .env.*
 !.env.example
+!.env.railway.example
+
+# Railway — credenciais de produção (MySQL, URLs com senha)
+.env.railway
+.env.production
+.env.production.local
+railway-database.env
+**/railway-database.env
 
 # Logs
 *.log

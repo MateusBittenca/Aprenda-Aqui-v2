@@ -20,6 +20,7 @@
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "ensure-track-colors": "tsx scripts/ensure-track-colors.ts",
+    "sync-tracks": "tsx scripts/sync-tracks.ts",
     "seed": "tsx prisma/seed.ts",
     "studio": "prisma studio"
   },
