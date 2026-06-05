@@ -77,9 +77,10 @@ export function TopBar({
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <StatPill
-            icon={<Flame className="h-4 w-4 fill-error" />}
+            icon={<Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-error shrink-0" />}
             value={streak}
-            className="hidden md:flex bg-error-container text-error"
+            className="bg-error-container text-error"
+            compact
           />
 
           <StatPill

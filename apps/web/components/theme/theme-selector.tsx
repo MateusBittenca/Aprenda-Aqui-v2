@@ -28,7 +28,7 @@ export function ThemeSelector() {
     );
   }
 
-  const active = (theme ?? "system") as ThemeValue;
+  const active = (theme ?? "light") as ThemeValue;
 
   return (
     <div className="grid grid-cols-3 gap-2" role="group" aria-label="Tema da interface">
