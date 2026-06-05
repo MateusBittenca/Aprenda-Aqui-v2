@@ -502,6 +502,14 @@
     }
   }
 
+  .pb-mobile-nav {
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .pulse-highlight {
     animation: pulse-ring 2s infinite;
   }

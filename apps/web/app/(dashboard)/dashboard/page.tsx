@@ -23,11 +23,11 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <section className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-navy mb-2">
+      <section className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-navy mb-1.5 sm:mb-2">
           Olá, {name}!
         </h1>
-        <p className="text-lg text-navy/60">
+        <p className="text-base sm:text-lg text-navy/60 leading-relaxed">
           Você está progredindo bem. Faltam{" "}
           <span className="text-primary font-bold">{formatNumber(xpToNext)} XP</span>{" "}
           para o nível {(profile?.level ?? 1) + 1}.

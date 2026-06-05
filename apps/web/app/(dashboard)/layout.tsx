@@ -52,7 +52,7 @@ export default async function DashboardLayout({
         titleLabel={titleLabel}
         unreadNotifications={unreadNotifications}
       />
-      <main className="lg:ml-64 p-6 pb-24 lg:pb-6">
+      <main className="lg:ml-64 px-4 py-5 sm:px-6 sm:py-6 pb-mobile-nav lg:pb-6">
         <div className="max-w-[1200px] mx-auto">{children}</div>
       </main>
       <MobileNav />
